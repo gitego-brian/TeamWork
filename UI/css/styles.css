@@ -103,6 +103,12 @@ header [button]:hover {
     color: #2c2537;
 }
 
+.about-page .header li,
+.contact-page .header li{
+    box-shadow:none;
+    border:none
+}
+
 /* HOMEPAGE */
 .index-page body {
     background: linear-gradient(to bottom, rgba(224, 221, 241, 0.842), rgba(157, 149, 194, 0.87));
@@ -577,7 +583,10 @@ p.article-text {
 .contact-page .index-up-section [button] {
     box-shadow: none;
     margin-right: 5px;
-    border: 1px solid #695c80
+}
+.about-page .index-up-section [button]:hover,
+.contact-page .index-up-section [button]:hover {
+    color : rgb(89, 111, 131)
 }
 
 .about-down-section {
