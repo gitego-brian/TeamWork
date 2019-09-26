@@ -5,7 +5,7 @@
 }
 
 html {
-    font-family: "Lexend deca", sans-serif
+    font-family: "Lexend-deca", sans-serif;
 }
 
 /*HOMEPAGE***************/
@@ -48,30 +48,6 @@ img[alt=logo] {
 
 }
 
-header [button] {
-    margin: 5px;
-    margin-top: 15px;
-    background: inherit;
-    color: #cbd4e6;
-    font-weight: bold;
-    box-shadow: none;
-
-}
-
-.index-page header [button] {
-    color: #2c2537;
-}
-
-header [button]:hover {
-    color: #2c2537;
-    transition: all 0.5s ease;
-    background: none
-}
-
-.index-page header [button]:hover {
-    color: #071bc9;
-}
-
 [button] {
     color: whitesmoke;
     text-decoration: none;
@@ -79,7 +55,7 @@ header [button]:hover {
     display: inline-block;
     width: fit-content;
     font-size: 1.5vw;
-    font-weight: 400;
+    font-weight: 550;
     border-radius: 10px;
     box-shadow: 0 0 5px rgb(75, 76, 82);
     background-color: #2c2537;
@@ -100,8 +76,33 @@ header [button]:hover {
 
 [button]:active {
     background-color: rgb(56, 71, 138);
+    color: #82739b;
+}
+
+header [button] {
+    margin: 5px;
+    margin-top: 15px;
+    background: inherit;
+    color: #ffffff;
+    box-shadow: none;
+
+}
+
+.index-page header [button] {
     color: #2c2537;
 }
+
+header [button]:hover {
+    color: #b090e0;
+    transition: all 0.5s ease;
+    background: none
+}
+
+.index-page header [button]:hover {
+    color: #313553;
+}
+
+
 
 .about-page .header li,
 .contact-page .header li{
@@ -110,9 +111,6 @@ header [button]:hover {
 }
 
 /* HOMEPAGE */
-.index-page body {
-    background: linear-gradient(to bottom, rgba(224, 221, 241, 0.842), rgba(157, 149, 194, 0.87));
-}
 
 .index-page .header,
 .about-page .header,
@@ -144,11 +142,10 @@ header [button]:hover {
 .heading .subtitle {
     text-align: center;
     letter-spacing: 3px;
-    color: rgb(27, 24, 80)
 }
 
 body {
-    background: linear-gradient(to bottom, rgba(210, 207, 229, 0.842), rgba(85, 74, 133, 0.87));
+    background: linear-gradient(to bottom, rgba(210, 207, 229, 0.842), rgb(212, 209, 224));
 }
 
 a {
@@ -338,13 +335,6 @@ img[alt=user] {
     color: #2c2537;
 }
 
-
-
-
-
-/***********User Library********/
-
-
 .page-content {
     padding: 15px;
 }
@@ -469,8 +459,8 @@ img[alt=user] {
     padding: 15px;
     margin: 50px 15px;
     width: 85%;
-    box-shadow: 0px 0px 10px;
-    border-radius: 20px;
+    box-shadow: 0px 0px 5px;
+    border-radius: 10px;
     cursor: default
 }
 
@@ -541,7 +531,7 @@ p.article-text {
 
 .about-page body,
 .contact-page body {
-    background: linear-gradient(to bottom, rgba(224, 221, 241, 0.842), rgba(157, 149, 194, 0.87));
+    background: linear-gradient(to bottom, rgba(224, 221, 241, 0.842), rgb(197, 192, 221));
 }
 
 .about-page .index-up-section {
@@ -566,7 +556,6 @@ p.article-text {
 
 .about-page .index-up-section .tw-label span,
 .contact-page .index-up-section .tw-label span {
-    text-shadow: -5px 5px 5px #695c80;
     color: #b29bd8;
 }
 
@@ -604,7 +593,6 @@ p.article-text {
     background-color: rgba(44, 37, 55, 0.84);
     color: rgba(240, 248, 255, 0.877);
     padding: 15px;
-    text-shadow: 0 -5px 3px #15111a
 }
 
 /******contact us****/
@@ -704,7 +692,7 @@ p.article-text {
     padding: 5px;
     height: fit-content;
     position: relative;
-    --webkit-animation: size-in 0.5s;
+    --webkit-animation: zoom-in 0.5s;
     animation: zoom-in 0.3s;
 }
 
@@ -969,7 +957,7 @@ p.article-text {
 @media screen and (max-width:375px) {
 
     [button] {
-        font-size: 7vw
+        font-size: 5vw
     }
 
     .search-panel input {
