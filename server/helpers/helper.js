@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
-import { users, articles } from '../data/data';
+import { users } from '../data/data';
 
 class Helper {
 	getToken({
-		id, email, firstName, lastName, isAdmin
-	}) {
+ id, email, firstName, lastName, isAdmin 
+}) {
 		const token = jwt.sign(
 			{
 				id,
