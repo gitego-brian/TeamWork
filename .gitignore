@@ -5,6 +5,6 @@ node_modules
 coverage
 
 # Ignore coveralls.yml and .env to keep them confidential
-coveralls.yml
+.coveralls.yml
 .env
 
