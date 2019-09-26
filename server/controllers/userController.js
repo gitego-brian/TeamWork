@@ -101,7 +101,62 @@ class UserController {
 			});
 		}
     }
-    
+
+	signIn(req, res) {
+		const { email, password } = req.body;
+		const { error } = schema.loginSchema.validate({
+			email,
+			password,
+		});
+		if (error && error.details[0].type === 'any.required') {
+			res.status(400).send({
+				status: 400,
+				error: error.details[0].message.replace(/[/"]/g, ''),
+			});
+		} else {
+			const user = users.find((el) => el.email === req.body.email);
+			if (user) {
+				bcrypt.compare(req.body.password, user.password, (_err, result) => {
+					if (result) {
+						if (user.isAdmin === true) {
+							res.status(200).send({
+								status: 200,
+								message: 'Admin is successfully logged in',
+								data: {
+									token: Helper.getToken(user),
+								},
+							});
+						} else {
+							const {
+								id, firstName, lastName, email
+							} = user;
+							res.status(200).send({
+								status: 200,
+								message: 'User is successfully logged in',
+								data: {
+									token: Helper.getToken(user),
+									id,
+									firstName,
+									lastName,
+									email,
+								},
+							});
+						}
+					} else {
+						res.status(401).send({
+							status: 401,
+							error: 'Password incorrect',
+						});
+					}
+				});
+			} else {
+				res.status(404).send({
+					status: 404,
+					error: 'User not found',
+				});
+			}
+		}
+	}
 }
 
 export default new UserController();
