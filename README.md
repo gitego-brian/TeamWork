@@ -1,4 +1,4 @@
-# TeamWork
+# TeamWork [![Build Status](https://travis-ci.org/gitego-brian/TeamWork.svg?branch=develop)](https://travis-ci.org/gitego-brian/TeamWork)
 
 ## What is it?
 

@@ -1,10 +1,10 @@
 {
-  "name": "TeamWork",
+  "name": "teamwork",
   "version": "1.0.0",
   "description": "An internal social network for organizations’ employees.",
   "main": "app.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 10000 --exit",
+    "test": "nyc mocha --reporter=html --reporter=text --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 10000 --exit",
     "start": "node --require babel-core/register --require babel-polyfill ./server/app.js",
     "dev-start": "nodemon --require babel-core/register --require babel-polyfill ./server/app.js",
     "lint": "eslint server",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gitego-brian/TeamWork.git"
+    "url": "https://github.com/gitego-brian/TeamWork.git"
   },
   "keywords": [
     "teamwork",
