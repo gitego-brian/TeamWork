@@ -232,6 +232,55 @@ class ArticleController {
 			}
 		}
 	}
+
+	deleteComment(req, res) {
+		const { commentID } = req.params;
+		const article = Helper.findOne(req.params.articleID, articles);
+		if (article) {
+			const comment = Helper.findOne(commentID, article.comments);
+			if (comment) {
+				const { id } = req.payload;
+				if (
+					(comment.flags.length && req.payload.isAdmin)
+          || id === comment.authorId
+				) {
+					article.comments.splice(article.comments.indexOf(comment), 1);
+					res.status(200).send({
+						status: 200,
+						message: 'Comment successfully deleted',
+						data: {
+							comment
+						}
+					});
+				} else if (!comment.flags.length && req.payload.isAdmin) {
+					res.status(403).send({
+						status: 403,
+						error: 'Cannot delete an unflagged comment'
+					});
+				} else if (comment.flags.length && !req.payload.isAdmin) {
+					res.status(403).send({
+						status: 403,
+						error: 'Not Authorized'
+					});
+				} else {
+					res.status(403).send({
+						status: 403,
+						error: 'Not Authorized'
+					});
+				}
+			} else {
+				res.status(404).send({
+					status: 404,
+					error: 'Comment not found'
+				});
+			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
+		}
+	}
 }
 
 export default new ArticleController();
