@@ -20,4 +20,6 @@ router.post('/:articleID/comments', Helper.verifyToken, ArticleController.postCo
 
 router.post('/:articleID/comments/:commentID/', Helper.verifyToken, ArticleController.flagComment);
 
+router.delete('/:articleID/comments/:commentID/', Helper.verifyToken, ArticleController.deleteComment);
+
 export default router;
