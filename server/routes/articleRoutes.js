@@ -8,11 +8,9 @@ const router = Router();
 
 router.get('/', Helper.verifyToken, ArticleController.getArticles);
 
-router.post(
-  '/:articleID',
-  Helper.verifyToken,
-  ArticleController.getSingleArticle
-);
+router.post('/', Helper.verifyToken, ArticleController.newArticle);
+
+router.post('/:articleID', Helper.verifyToken, ArticleController.getSingleArticle);
 
 router.post('/:articleID', Helper.verifyToken, ArticleController.shareArticle);
 
