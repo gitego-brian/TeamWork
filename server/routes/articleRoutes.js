@@ -10,11 +10,13 @@ router.get('/', Helper.verifyToken, ArticleController.getArticles);
 
 router.post('/', Helper.verifyToken, ArticleController.newArticle);
 
-router.post('/:articleID', Helper.verifyToken, ArticleController.getSingleArticle);
+router.get('/:articleID', Helper.verifyToken, ArticleController.getSingleArticle);
 
 router.post('/:articleID', Helper.verifyToken, ArticleController.shareArticle);
 
 router.patch('/:articleID', Helper.verifyToken, ArticleController.updateArticle);
+
+router.delete('/:articleID', Helper.verifyToken, ArticleController.deleteArticle);
 
 router.post('/:articleID/comments', Helper.verifyToken, ArticleController.postComment);
 

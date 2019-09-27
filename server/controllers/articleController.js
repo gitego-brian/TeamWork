@@ -138,6 +138,33 @@ class ArticleController {
 		}
 	}
 
+	deleteArticle(req, res) {
+		const authorId = req.payload.id;
+		const article = Helper.findOne(req.params.articleID, articles);
+		if (article) {
+			if (article.authorId === authorId || req.payload.isAdmin) {
+				articles.splice(articles.indexOf(article), 1);
+				res.status(200).send({
+					status: 200,
+					message: 'Article successfully deleted',
+					data: {
+						article
+					}
+				});
+			} else {
+				res.status(403).send({
+					status: 403,
+					error: 'Not Authorized'
+				});
+			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
+		}
+	}
+
 	postComment(req, res) {
 		const { comment } = req.body;
 		const { error } = schema.commentSchema.validate({
