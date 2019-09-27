@@ -75,6 +75,49 @@ class ArticleController {
 		}
 	}
 
+	updateArticle(req, res) {
+		const { title, article } = req.body;
+
+		const authorId = req.payload.id;
+		const articleToUpdate = Helper.findOne(req.params.articleID, articles);
+		if (articleToUpdate) {
+			if (req.payload.isAdmin || articleToUpdate.authorId === authorId) {
+				if (!title && !article) {
+					res.status(400).send({
+						status: 400,
+						error: "Can't update if no changes made"
+					});
+				} else {
+					if (title) {
+						articleToUpdate.title = title;
+					}
+					if (article) {
+						articleToUpdate.article = article;
+					}
+					const updatedArticle = articleToUpdate;
+					updatedArticle.updatedOn = Moment().format('YYYY-MMM-DD');
+					res.status(200).send({
+						status: 200,
+						message: 'Article successfully edited',
+						data: {
+							updatedArticle
+						}
+					});
+				}
+			} else {
+				res.status(403).send({
+					status: 403,
+					error: 'Not Authorized'
+				});
+			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
+		}
+	}
+
 	shareArticle(req, res) {
 		const article = Helper.findOne(req.params.articleID, articles);
 		const { firstName, lastName } = req.payload;
