@@ -14,4 +14,6 @@ router.post('/:articleID', Helper.verifyToken, ArticleController.getSingleArticl
 
 router.post('/:articleID', Helper.verifyToken, ArticleController.shareArticle);
 
+router.patch('/:articleID', Helper.verifyToken, ArticleController.updateArticle);
+
 export default router;
