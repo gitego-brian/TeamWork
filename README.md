@@ -1,4 +1,6 @@
-# TeamWork [![Build Status](https://travis-ci.org/gitego-brian/TeamWork.svg?branch=develop)](https://travis-ci.org/gitego-brian/TeamWork)
+# TeamWork
+
+[![Build Status](https://travis-ci.org/gitego-brian/TeamWork.svg?branch=develop)](https://travis-ci.org/gitego-brian/TeamWork) [![Coverage Status](https://coveralls.io/repos/github/gitego-brian/TeamWork/badge.svg?branch=develop)](https://coveralls.io/github/gitego-brian/TeamWork?branch=develop)
 
 ## What is it?
 
