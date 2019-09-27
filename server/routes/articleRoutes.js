@@ -18,4 +18,6 @@ router.patch('/:articleID', Helper.verifyToken, ArticleController.updateArticle)
 
 router.post('/:articleID/comments', Helper.verifyToken, ArticleController.postComment);
 
+router.post('/:articleID/comments/:commentID/', Helper.verifyToken, ArticleController.flagComment);
+
 export default router;

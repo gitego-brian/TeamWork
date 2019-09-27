@@ -1,7 +1,7 @@
 import Moment from 'moment';
 import Article from '../models/articleModel';
 import Comment from '../models/commentModel';
-// import Flag from '../models/flagModel';
+import Flag from '../models/flagModel';
 import Helper from '../helpers/helper';
 import { articles } from '../data/data';
 import schema from '../helpers/joiValidation';
@@ -170,6 +170,60 @@ class ArticleController {
 						comment: newComment
 					}
 				});
+			} else {
+				res.status(404).send({
+					status: 404,
+					error: 'Article not found'
+				});
+			}
+		}
+	}
+
+	flagComment(req, res) {
+		const { reason } = req.body;
+		const { error } = schema.flagSchema.validate({
+			reason
+		});
+		if (!reason) {
+			res.status(400).send({
+				status: 400,
+				error: "Can't flag comment, no reason provided"
+			});
+		} else if (error) {
+			if (error.details[0].type === 'string.min') {
+				res.status(400).send({
+					status: 400,
+					error: 'That reason may not be understandable, Care to elaborate?'
+				});
+			} else if (error.details[0].type === 'any.required') {
+				res.status(400).send({
+					status: 400,
+					error: "Can't flag comment, no reason provided"
+				});
+			}
+		} else {
+			const { firstName, lastName } = req.payload;
+			const { commentID } = req.params;
+			const article = Helper.findOne(req.params.articleID, articles);
+			if (article) {
+				const comment = Helper.findOne(commentID, article.comments);
+				if (comment) {
+					const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
+					comment.flags.push(flag);
+					res.status(201).send({
+						status: 201,
+						message: 'Comment flagged!',
+						data: {
+							flag,
+							comment
+						}
+					});
+				} else {
+					res.status(404).send({
+						status: 404,
+						error: 'Comment not found'
+					});
+				}
 			} else {
 				res.status(404).send({
 					status: 404,
