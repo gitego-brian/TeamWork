@@ -16,4 +16,6 @@ router.post('/:articleID', Helper.verifyToken, ArticleController.shareArticle);
 
 router.patch('/:articleID', Helper.verifyToken, ArticleController.updateArticle);
 
+router.post('/:articleID/comments', Helper.verifyToken, ArticleController.postComment);
+
 export default router;

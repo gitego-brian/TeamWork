@@ -1,6 +1,6 @@
 import Moment from 'moment';
 import Article from '../models/articleModel';
-// import Comment from '../models/commentModel';
+import Comment from '../models/commentModel';
 // import Flag from '../models/flagModel';
 import Helper from '../helpers/helper';
 import { articles } from '../data/data';
@@ -135,6 +135,47 @@ class ArticleController {
 				status: 404,
 				error: 'Article not found'
 			});
+		}
+	}
+
+	postComment(req, res) {
+		const { comment } = req.body;
+		const { error } = schema.commentSchema.validate({
+			comment
+		});
+		if (error) {
+			if (error.details[0].type === 'any.required') {
+				res.status(400).send({
+					status: 400,
+					error: "You didn't write anything"
+				});
+			} else {
+				res.status(400).send({
+					status: 400,
+					error: error.details[0].message.replace(/[/"]/g, '')
+				});
+			}
+		} else {
+			const authorId = req.payload.id;
+			const article = Helper.findOne(req.params.articleID, articles);
+			if (article) {
+				const newComment = new Comment(req.body.comment, authorId);
+				article.comments.push(newComment);
+				res.status(201).send({
+					status: 201,
+					message: 'Comment posted successfully',
+					data: {
+						articleTitle: article.title,
+						article: article.article,
+						comment: newComment
+					}
+				});
+			} else {
+				res.status(404).send({
+					status: 404,
+					error: 'Article not found'
+				});
+			}
 		}
 	}
 }
