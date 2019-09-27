@@ -11,7 +11,7 @@ let adminToken;
 let articleId;
 let commentId;
 
-// Articles
+// About creating an article
 describe('Creating an article', () => {
 	it('first sign up an employee', (done) => {
 		const data = {
@@ -145,6 +145,7 @@ describe('Creating an article', () => {
 			});
 	});
 });
+
 // VIEWING AND SHARING ARTICLES
 describe('Viewing and sharing articles', () => {
 	beforeEach('create an article', (done) => {
@@ -262,7 +263,7 @@ describe('Viewing and sharing articles', () => {
 	});
 });
 
-// Employee can edit, delete and update his articles
+// Editing deleting and updating articles
 
 describe('Employee can change his articles', () => {
 	beforeEach('create an article', (done) => {
@@ -571,6 +572,7 @@ describe('Employee can change his articles', () => {
 	});
 });
 
+// ABOUT COMMENTS
 describe('Comments', () => {
 	beforeEach('Comment on an article', (done) => {
 		const data = {
@@ -763,6 +765,7 @@ describe('Comments', () => {
 			});
 	});
 });
+
 describe('Deleting flagged comments', () => {
 	beforeEach('Comment on an article', (done) => {
 		const data = {

@@ -5,20 +5,6 @@ import app from '../app';
 chai.use(chaiHttp);
 chai.should();
 
-// WELCOME PAGE
-describe('Welcome', () => {
-	it('should display a welcome message', (done) => {
-		chai.request(app)
-			.get('/')
-			.end((_err, res) => {
-				res.should.have.status(200);
-				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('message').eql('Welcome to TeamWork!');
-				done();
-			});
-	});
-});
-
 // Signing up
 describe('Employee signup test: case 1', () => {
 	it('it should sign up an employee', (done) => {
