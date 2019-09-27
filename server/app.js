@@ -7,8 +7,10 @@ import articleRoutes from './routes/articleRoutes';
 
 const app = express();
 const port = process.env.PORT || 3000;
+
 dotenv.config(); // configuring environment variables
 
+// MIDDLEWARE
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(
@@ -17,6 +19,7 @@ app.use(
 	})
 );
 
+// ROUTING
 app.get('/', (_req, res) => {
 	res.status(200).send({
 		status: 200,
@@ -26,11 +29,9 @@ app.get('/', (_req, res) => {
 app.use('/api/v1/auth', userRoutes);
 app.use('/api/v1/articles', articleRoutes);
 
-app.listen(port);
-
 // Error handling
-app.use('/*', (res) => {
-	res.status(404).send({ error: 'Not Found' });
+app.use('/*', (_req, res) => {
+	res.status(404).send({ status: 404, error: 'Not Found' });
 });
 
 app.use((error, _req, res, _next) => {
@@ -41,4 +42,7 @@ app.use((error, _req, res, _next) => {
 		}
 	});
 });
+
+app.listen(port, () => console.log(`listening on ${port}`));
+
 export default app;
