@@ -1,7 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import morgan from 'morgan';
 import userRoutes from './routes/userRoutes';
 import articleRoutes from './routes/articleRoutes';
 
@@ -11,7 +10,6 @@ const port = process.env.PORT || 3000;
 dotenv.config(); // configuring environment variables
 
 // MIDDLEWARE
-app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(
 	bodyParser.urlencoded({
@@ -43,6 +41,6 @@ app.use((error, _req, res, _next) => {
 	});
 });
 
-app.listen(port, () => console.log(`listening on ${port}`));
+app.listen(port);
 
 export default app;
