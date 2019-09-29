@@ -1,0 +1,6 @@
+{
+  "name": "brian-teamwork",
+  "description": "An internal social network for organizations’ employees.",
+  "repository": "https://github.com/gitego-brian/TeamWork",
+  "image": "heroku/nodejs"
+}
