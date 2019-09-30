@@ -17,7 +17,7 @@ const schema = {
 			.email()
 			.required(),
 		password: Joi.string()
-			.regex(/^[a-zA-Z0-9!@#$%^&*,.;:']{8,128}$/)
+			.regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,128}$/)
 			.required(),
 		gender: Joi.valid('male', 'female', 'Male', 'Female', 'M', 'F').required(),
 		jobRole: Joi.string()
@@ -36,9 +36,7 @@ const schema = {
 			.email()
 			.trim()
 			.required(),
-		password: Joi.string()
-			.regex(/^[a-zA-Z0-9!@#$%^&*,.;:']{8,128}$/)
-			.required()
+		password: Joi.string().required()
 	}),
 
 	articleSchema: Joi.object({

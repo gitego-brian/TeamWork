@@ -11,14 +11,14 @@ let adminToken;
 let articleId;
 let commentId;
 
-// About creating an article
+// Articles
 describe('Creating an article', () => {
 	it('first sign up an employee', (done) => {
 		const data = {
 			firstName: 'Baraka',
 			lastName: 'Mugisha',
 			email: 'mugishaje@gmail.com',
-			password: '12345678',
+			password: 'Password@123',
 			gender: 'male',
 			jobRole: 'Marketing assistant',
 			department: 'Marketing',
@@ -38,7 +38,7 @@ describe('Creating an article', () => {
 			firstName: 'James',
 			lastName: 'Nyagatare',
 			email: 'jimnyagtr@gmail.com',
-			password: 'complicatedpassword',
+			password: 'Password@123',
 			gender: 'male',
 			jobRole: 'Back-end developer',
 			department: 'Web development',
@@ -145,7 +145,6 @@ describe('Creating an article', () => {
 			});
 	});
 });
-
 // VIEWING AND SHARING ARTICLES
 describe('Viewing and sharing articles', () => {
 	beforeEach('create an article', (done) => {
@@ -159,9 +158,14 @@ describe('Viewing and sharing articles', () => {
 			.send(data)
 			.end((_err, res) => {
 				articleId = res.body.data.id;
-				res.should.have.status(201);
-				res.body.should.have.property('status').eql(201);
-				res.body.should.have.property('message').eql('Article successfully created');
+				done();
+			});
+	});
+	afterEach('delete an article', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, res) => {
 				done();
 			});
 	});
@@ -173,7 +177,7 @@ describe('Viewing and sharing articles', () => {
 			.end((_err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('message').eql('Success');
+				res.body.should.have.property('message').eql('All articles');
 				res.body.should.have.property('data');
 				res.body.data.should.have.property('articles');
 				done();
@@ -224,6 +228,106 @@ describe('Viewing and sharing articles', () => {
 			});
 	});
 
+	it('Employee can flag an article', (done) => {
+		const data = {
+			reason: 'inappropriate'
+		};
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(201);
+				res.body.should.have.property('status').eql(201);
+				res.body.should.have.property('message').eql('Article flagged!');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('article');
+				res.body.data.should.have.property('flag');
+				res.body.data.flag.should.have.property('id');
+				res.body.data.flag.should.have.property('reason').eql('inappropriate');
+				res.body.data.flag.should.have.property('flaggedBy');
+				res.body.data.flag.should.have.property('flaggedOn');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an article if not logged in or signed up', (done) => {
+		const data = {
+			reason: 'inappropriate'
+		};
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(401);
+				res.body.should.have.property('status').eql(401);
+				res.body.should.have.property('error').eql('Please log in or sign up first');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an article if the reason is too short', (done) => {
+		const data = {
+			reason: 'dumb'
+		};
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('That reason may not be understandable, Care to elaborate?');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an non-existing article', (done) => {
+		const data = {
+			reason: 'inappropriate'
+		};
+		chai.request(app)
+			.post('/api/v1/articles/100/flags')
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(404);
+				res.body.should.have.property('status').eql(404);
+				res.body.should.have.property('error').eql('Article not found');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an article with empty reason', (done) => {
+		const data = {
+			reason: ''
+		};
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('Can\'t flag article, no reason provided');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an article with no reason', (done) => {
+		const data = {};
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('Can\'t flag article, no reason provided');
+				done();
+			});
+	});
+
 	it('Employee should share an article', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}`)
@@ -263,7 +367,7 @@ describe('Viewing and sharing articles', () => {
 	});
 });
 
-// Editing deleting and updating articles
+// Employee can edit, delete and update his articles
 
 describe('Employee can change his articles', () => {
 	beforeEach('create an article', (done) => {
@@ -279,6 +383,14 @@ describe('Employee can change his articles', () => {
 				articleId = res.body.data.id;
 				res.should.have.status(201);
 				res.body.should.have.property('status').eql(201);
+				done();
+			});
+	});
+	afterEach('delete an article', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, _res) => {
 				done();
 			});
 	});
@@ -572,11 +684,25 @@ describe('Employee can change his articles', () => {
 	});
 });
 
-// ABOUT COMMENTS
 describe('Comments', () => {
+	beforeEach('create an article', (done) => {
+		const data = {
+			title: 'Just another newer sign',
+			article: 'Looking at the world through my rearview, searching for an answer up high, or is it all wasted time?'
+		};
+		chai.request(app)
+			.post('/api/v1/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				articleId = res.body.data.id;
+				done();
+			});
+	});
+
 	beforeEach('Comment on an article', (done) => {
 		const data = {
-			comment: 'Great'
+			comment: 'Amaziiinng'
 		};
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments`)
@@ -587,6 +713,24 @@ describe('Comments', () => {
 				done();
 			});
 	});
+	afterEach('Delete a comment', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}/comments/${commentId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, _res) => {
+				done();
+			});
+	});
+
+	afterEach('delete an article', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, _res) => {
+				done();
+			});
+	});
+
 	it('Employee can flag a comment', (done) => {
 		const data = {
 			reason: 'inappropriate'
@@ -765,8 +909,21 @@ describe('Comments', () => {
 			});
 	});
 });
-
 describe('Deleting flagged comments', () => {
+	beforeEach('create an article', (done) => {
+		const data = {
+			title: 'Just another even newer sign',
+			article: 'Looking at the world through my rearview, searching for an answer up high, or is it all wasted time?'
+		};
+		chai.request(app)
+			.post('/api/v1/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				articleId = res.body.data.id;
+				done();
+			});
+	});
 	beforeEach('Comment on an article', (done) => {
 		const data = {
 			comment: 'Great'
@@ -790,6 +947,22 @@ describe('Deleting flagged comments', () => {
 			.send(data)
 			.end((err, _res) => {
 				if (err) done(err);
+				done();
+			});
+	});
+	afterEach('delete a comment', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}/comments/${commentId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, _res) => {
+				done();
+			});
+	});
+	afterEach('delete an article', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, _res) => {
 				done();
 			});
 	});
