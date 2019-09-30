@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="user-home">
+<html lang="en" class="dashboard">
 
 <head>
     <meta charset="UTF-8">
@@ -22,7 +22,7 @@
                     <li class="user-hdr">
                         <img src="../images/user.png" alt="user">
                         <div class="drop-content">
-                            <a href="new.html">New Article</a>
+                            <a href="new.html" class>New Article</a>
                             <a href="dashboard.html">Dashboard</a>
                             <a href="login.html">Log out</a>
                         </div>
@@ -36,26 +36,28 @@
         </header>
         <div class="page-content">
             <div class="side">
-                <br>
-                <br>
-                <br>
-                <ul class="side-menu">
+                <div class="side-profile">
+                    <div class="profile-pic">
+                        <img src="../images/user.png" alt="user-profile">
+                    </div>
+                    <div class="user-info">
+                        <div class="info name">Brian Gitego</div>
+                        <div class="info mail"><span>Email: </span><span>gitegob@gmail.com</span></div>
+                        <div class="info phone"><span>Phone: </span><span>+270785721391</span></div>
+                    </div>
                     <br>
-                    <li><a href="new.html" class="create-article" button>New Article</a></li>
 
-                </ul>
-                <hr>
-
+                </div>
             </div>
             <div class="main">
                 <div class="search-panel">
                     <input type="text" placeholder="Search for an article"><button type="button" class="button" id="search-btn" button>Search</button>
 
                 </div>
+
                 <div class="content" id="center">
 
                     <div class="article" id="article-1">
-                        <div class="article-author"><b>You</b> shared an article</div>
                         <div class="article-date">June 30</div>
                         <div class="article-content">
                             <a href="view.html">
@@ -87,7 +89,6 @@
                         </div>
                     </div>
                     <div class="article" id="article-1">
-                        <div class="article-author"><b>Robben Bahati</b> posted an article</div>
                         <div class="article-date">June 30</div>
                         <div class="article-content">
                             <a href="view.html">
@@ -120,7 +121,6 @@
                     </div>
 
                     <div class="article" id="article-2">
-                        <div class="article-author"><b>You</b> posted an article</div>
                         <div class="article-date">June 30</div>
                         <div class="article-content">
                             <a href="view.html">
@@ -141,7 +141,6 @@
                         </div>
                     </div>
                     <div class="article" id="article-3">
-                        <div class="article-author"><b>Chretien Himbaza</b> posted an article</div>
                         <div class="article-date">June 30</div>
                         <div class="article-content">
                             <a href="view.html">
