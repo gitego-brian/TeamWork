@@ -5,7 +5,6 @@
 }
 
 html {
-    font-family: "Lexend-deca", sans-serif;
 }
 
 /*HOMEPAGE***************/
@@ -13,13 +12,15 @@ html {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
+    font-family: "Lexend deca", sans-serif;
+
 }
 
 /* HEADER */
 
 .header {
     width: 100%;
-    background: linear-gradient(to right, #9dabd1, #4b1db4);
+    background: linear-gradient(to right, #9dabd1, #2c2537);
     border-bottom: 5px solid #2c2537
 }
 
@@ -93,7 +94,7 @@ header [button] {
 }
 
 header [button]:hover {
-    color: #b090e0;
+    color:rgb(150, 168, 252);
     transition: all 0.5s ease;
     background: none
 }
@@ -212,7 +213,7 @@ a:active {
 
 .whole-body {
     min-height: 100vh;
-    padding-bottom: 30px;
+    padding-bottom: 40px;
 }
 
 .footer {
@@ -258,12 +259,11 @@ input {
     padding: 15px;
     background: none;
     color: black;
-    font-family: "Lexend Deca", sans-serif;
     font-size: 1em;
     font-weight: 500;
     margin: 15px;
     border: 1px solid rgba(16, 13, 20, 0.4);
-    border-radius: 20px;
+    border-radius: 10px;
     text-overflow: ellipsis
 }
 
@@ -311,7 +311,7 @@ input[type=radio] {
 .search-panel input {
     height: 50px;
     width: 66%;
-    float: left
+    float: left;
 }
 
 .search-panel [button] {
@@ -327,8 +327,11 @@ input[type=radio] {
 }
 
 img[alt=user] {
-    height: 30px;
-    width: 30px
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #c2b2d4;
+
 }
 
 .author-name {
@@ -351,6 +354,11 @@ img[alt=user] {
 
 .page-content .main {
     width: 75%;
+}
+.view-a-page .page-content .main,
+.user-home .page-content .main{
+    margin: auto;
+    float: none
 }
 
 .page-content:after {
@@ -385,8 +393,36 @@ img[alt=user] {
 .page-content .main .article {
     width: 95%
 }
+.pagination {
+    position: relative;
+    width: 30%;
+    left: 50%;
+}
+.pagination li a{
+    text-decoration: none;
+}
+.pagination li {
+    display: block;
+    float: left;
+    text-align: center;
+    color: #2c2537;
+    font-size: 1.5em;
+    border-radius: 10px;
+    padding: 15px
+}
+.pagination li.active {
+    background-color: #2c2537;
+}
+.pagination li.active a{
+    color:white;
+}
+.pagination:after {
+    content: "";
+    display: block;
+    clear: both
+}
 
-/* SIDE*******USER HOME & USER LIBRARY */
+/* SIDE*******USER HOME & Dashboard */
 
 .page-content .side ul {
     width: 90%;
@@ -418,36 +454,22 @@ img[alt=user] {
     padding: 10px;
     height: 40px;
 }
+.side-profile .profile-pic img{
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    box-shadow: 0 0 5px #15111a
 
-.page-content .my-team h2 {
-    text-align: center;
-    color: #2c2537;
-    padding: 10px;
-    padding-left: 0;
-    margin-top: 15px
+}
+.side-profile .profile-pic{
+    border-radius: 20px;
+
+}
+.side-profile .user-info .info{
+    padding: 15px;
+    
 }
 
-.my-team ul {
-    width: 90%;
-    border-radius: 10px;
-    border: none;
-    background: none
-}
-
-.my-team ul li {
-    color: #1b1c31;
-    margin: 5px;
-    text-shadow: 0p 0 2px;
-    padding: 10px;
-    font-size: 1.1em;
-    text-align: center;
-    height: fit-content
-}
-
-.my-team ul li:hover {
-    color: aliceblue;
-    background-color: #1b1c31;
-}
 
 /* MAIN******* */
 
@@ -464,7 +486,9 @@ img[alt=user] {
     cursor: default
 }
 
-.user-home .article p {
+.user-home .article p,
+.dashboard .article p,
+.admin .article p {
     max-height: 200px;
     display: -webkit-box;
     overflow: hidden;
@@ -564,7 +588,7 @@ p.article-text {
 .contact-page .heading .title,
 .contact-page .heading .subtitle {
     font-size: 2.5em;
-    color: rgba(235, 234, 247, 0.644);
+    color:whitesmoke;
     letter-spacing: 10px;
 }
 
@@ -575,7 +599,7 @@ p.article-text {
 }
 .about-page .index-up-section [button]:hover,
 .contact-page .index-up-section [button]:hover {
-    color : rgb(89, 111, 131)
+    color :rgb(150, 168, 252)
 }
 
 .about-down-section {
@@ -590,7 +614,7 @@ p.article-text {
 
 .about-down-section .how-it-works,
 .about-down-section .about-me {
-    background-color: rgba(44, 37, 55, 0.84);
+    background-color: #2c2537;
     color: rgba(240, 248, 255, 0.877);
     padding: 15px;
 }
@@ -602,7 +626,9 @@ p.article-text {
     float: left;
 
 }
-
+textarea {
+    font-family: "Lexend deca",sans-serif
+}
 .contact-page .about-down-section .feedback textarea {
     box-shadow: 0 0 10px #15111a;
     border-radius: 10px;
@@ -668,10 +694,42 @@ p.article-text {
     font-weight: bold
 }
 
-.article .nbr-comments {
+.article .nbr-comments,
+.article .nbr-flags {
     text-align: right;
 }
-
+.nav-links {
+    position: relative
+}
+.user-hdr {
+    position: relative;
+    display: inline-block;
+    margin-right: 20px;
+}
+.drop-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    right: 0%;
+    border-radius: 10px;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+.drop-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: center;
+}
+.drop-content a:hover{
+    background-color: #2c2537;
+    color: white
+}
+.user-hdr:hover .drop-content {
+    display: block;
+}
 /*popup window for create article*/
 
 .bg-popup {
@@ -685,11 +743,15 @@ p.article-text {
     display: none;
     overflow: auto;
 }
-
+.bg-popup .share img{
+    width: 30px;
+    height: 30px;
+    margin-right: 10px
+}
 .popup {
     width: 30%;
     margin: 5px;
-    padding: 5px;
+    padding: 10px;
     height: fit-content;
     position: relative;
     --webkit-animation: zoom-in 0.5s;
@@ -725,7 +787,6 @@ p.article-text {
     margin-top: 2px;
     width: 90%;
     padding: 15px;
-    font-family: "lexend deca", sans-serif;
     font-size: 1em;
 }
 
@@ -750,8 +811,7 @@ p.article-text {
 }
 
 .new-a-page input {
-    background-color: aliceblue;
-    width: 70%;
+    width: 85%;
 }
 
 .new-a-page input::placeholder {
@@ -822,7 +882,6 @@ p.article-text {
     resize: none;
     font-size: 1em;
     margin: auto;
-    font-family: "lexend deca", sans-serif;
 }
 
 .view-a-popup span {
@@ -887,8 +946,7 @@ p.article-text {
         width: 60%;
     }
 
-    .page-content .side ul,
-    .my-team {
+    .page-content .side ul {
         display: none
     }
 
@@ -910,8 +968,18 @@ p.article-text {
 
     .view-a-page .page-content .side-menu {
         display: none;
+    }
+    .dashboard .side {
+        display: none
+    }
+    .pagination {
+        font-size: 1em;
+    }
+    .pagination li{
+    padding: 5px
 
     }
+
 
     .view-a-page .page-content .main,
     .view-a-popup,
