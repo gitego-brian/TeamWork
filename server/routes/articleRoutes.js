@@ -18,6 +18,8 @@ router.patch('/:articleID', Helper.verifyToken, ArticleController.updateArticle)
 
 router.delete('/:articleID', Helper.verifyToken, ArticleController.deleteArticle);
 
+router.post('/:articleID/flags', Helper.verifyToken, ArticleController.flagArticle);
+
 router.post('/:articleID/comments', Helper.verifyToken, ArticleController.postComment);
 
 router.post('/:articleID/comments/:commentID/', Helper.verifyToken, ArticleController.flagComment);

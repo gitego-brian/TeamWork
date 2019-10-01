@@ -10,6 +10,7 @@ class Article {
 		this.article = _article;
 		this.createdOn = Moment().format('YYYY-MMM-DD');
 		this.comments = [];
+		this.flags = [];
 	}
 }
 

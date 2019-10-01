@@ -14,7 +14,7 @@ class ArticleController {
 		);
 		res.status(200).send({
 			status: 200,
-			message: 'Success',
+			message: 'All articles',
 			data: {
 				articles: sortedArticles
 			}
@@ -33,27 +33,35 @@ class ArticleController {
 				error: error.details[0].message.replace(/[/"]/g, '')
 			});
 		} else {
-			const { firstName, lastName, id: authorId } = req.payload;
-			const authorName = `${firstName} ${lastName}`;
-			const newArticle = new Article(
-				req.body.title,
-				req.body.article,
-				authorId,
-				authorName
-			);
-			const { title, article, id } = newArticle;
-			articles.push(newArticle);
-			res.status(201).send({
-				status: 201,
-				message: 'Article successfully created',
-				data: {
-					id,
-					title,
-					article,
+			const match = articles.find((el) => el.title === req.body.title);
+			if (match) {
+				res.status(401).send({
+					status: 401,
+					error: 'Article already exists'
+				});
+			} else {
+				const { firstName, lastName, id: authorId } = req.payload;
+				const authorName = `${firstName} ${lastName}`;
+				const newArticle = new Article(
+					req.body.title,
+					req.body.article,
 					authorId,
 					authorName
-				}
-			});
+				);
+				const { title, article, id } = newArticle;
+				articles.push(newArticle);
+				res.status(201).send({
+					status: 201,
+					message: 'Article successfully created',
+					data: {
+						id,
+						title,
+						article,
+						authorId,
+						authorName
+					}
+				});
+			}
 		}
 	}
 
@@ -81,7 +89,7 @@ class ArticleController {
 		const authorId = req.payload.id;
 		const articleToUpdate = Helper.findOne(req.params.articleID, articles);
 		if (articleToUpdate) {
-			if (req.payload.isAdmin || articleToUpdate.authorId === authorId) {
+			if (articleToUpdate.authorId === authorId) {
 				if (!title && !article) {
 					res.status(400).send({
 						status: 400,
@@ -138,6 +146,52 @@ class ArticleController {
 		}
 	}
 
+	flagArticle(req, res) {
+		const { reason } = req.body;
+		const { error } = schema.flagSchema.validate({
+			reason
+		});
+		if (!reason) {
+			res.status(400).send({
+				status: 400,
+				error: 'Can\'t flag article, no reason provided'
+			});
+		} else if (error) {
+			if (error.details[0].type === 'string.min') {
+				res.status(400).send({
+					status: 400,
+					error: 'That reason may not be understandable, Care to elaborate?'
+				});
+			} else if (error.details[0].type === 'any.required') {
+				res.status(400).send({
+					status: 400,
+					error: "Can't flag article, no reason provided"
+				});
+			}
+		} else {
+			const { firstName, lastName } = req.payload;
+			const { articleID } = req.params;
+			const article = Helper.findOne(articleID, articles);
+			if (article) {
+				const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
+				article.flags.push(flag);
+				res.status(201).send({
+					status: 201,
+					message: 'Article flagged!',
+					data: {
+						flag,
+						article
+					}
+				});
+			} else {
+				res.status(404).send({
+					status: 404,
+					error: 'Article not found'
+				});
+			}
+		}
+	}
+
 	deleteArticle(req, res) {
 		const authorId = req.payload.id;
 		const article = Helper.findOne(req.params.articleID, articles);
@@ -186,17 +240,27 @@ class ArticleController {
 			const authorId = req.payload.id;
 			const article = Helper.findOne(req.params.articleID, articles);
 			if (article) {
-				const newComment = new Comment(req.body.comment, authorId);
-				article.comments.push(newComment);
-				res.status(201).send({
-					status: 201,
-					message: 'Comment posted successfully',
-					data: {
-						articleTitle: article.title,
-						article: article.article,
-						comment: newComment
-					}
-				});
+				const match = article.comments.find(
+					(el) => el.comment === req.body.comment
+				);
+				if (match) {
+					res.status(401).send({
+						status: 401,
+						error: 'Comment already exists'
+					});
+				} else {
+					const newComment = new Comment(req.body.comment, authorId);
+					article.comments.push(newComment);
+					res.status(201).send({
+						status: 201,
+						message: 'Comment posted successfully',
+						data: {
+							articleTitle: article.title,
+							article: article.article,
+							comment: newComment
+						}
+					});
+				}
 			} else {
 				res.status(404).send({
 					status: 404,

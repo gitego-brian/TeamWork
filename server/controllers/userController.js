@@ -16,7 +16,7 @@ class UserController {
 			gender,
 			jobRole,
 			department,
-			address,
+			address
 		} = req.body;
 		const { error } = schema.signupSchema.validate({
 			firstName,
@@ -26,92 +26,82 @@ class UserController {
 			gender,
 			jobRole,
 			department,
-			address,
+			address
 		});
 
 		if (error) {
 			if (error.details[0].type === 'string.pattern.base') {
-				res.status(400).send({
-					status: 400,
-					error: `${error.details[0].message
-						.split('with')[0]
-						.replace(/[/"]/g, '')}is not valid`,
-				});
+				if (
+					error.details[0].message.replace(/[/"]/g, '').split(' ')[0] === 'password') {
+					res.status(400).send({
+						status: 400,
+						error: 'password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters'
+					});
+				} else {
+					res.status(400).send({
+						status: 400,
+						error: `${error.details[0].message
+							.split('with')[0]
+							.replace(/[/"]/g, '')}is not valid`
+					});
+				}
 			} else if (error.details[0].type === 'any.only') {
 				res.status(400).send({
 					status: 400,
-					error: 'gender can be Male(M) or Female(F)',
+					error: 'gender can be Male(M) or Female(F)'
 				});
 			} else {
 				res.status(400).send({
 					status: 400,
-					error: error.details[0].message.replace(/[/"]/g, ''),
+					error: error.details[0].message.replace(/[/"]/g, '')
 				});
 			}
 		} else if (users.find((el) => el.email === req.body.email)) {
 			res.status(403).send({
 				status: 403,
-				error: 'Email already exists',
+				error: 'Email already exists'
 			});
 		} else {
 			bcrypt.hash(req.body.password, 10, (err, hash) => {
 				if (err) {
 					res.status(500).send({
 						status: 500,
-						error: 'Internal server error',
+						error: 'Internal server error'
 					});
 				} else {
 					const user = new User(
 						req.body.firstName,
 						req.body.lastName,
 						req.body.email,
-						hash, // we store the hashed version of the password
+						hash,
 						req.body.gender,
 						req.body.jobRole,
 						req.body.department,
-						req.body.address,
+						req.body.address
 					);
-					const {
-						id,
-						firstName,
-						lastName,
-						email,
-						gender,
-						jobRole,
-						department,
-						address,
-					} = user;
 					users.push(user);
 					res.status(201).send({
 						status: 201,
 						message: 'User Account successfully created',
 						data: {
-							token: Helper.getToken(user),
-							id,
-							firstName,
-							lastName,
-							email,
-							gender,
-							jobRole,
-							department,
-							address,
-						},
+							token: Helper.getToken(user)
+						}
 					});
 				}
 			});
 		}
-    }
+	}
 
 	signIn(req, res) {
 		const { email, password } = req.body;
 		const { error } = schema.loginSchema.validate({
 			email,
-			password,
+			password
 		});
 		if (error && error.details[0].type === 'any.required') {
 			res.status(400).send({
 				status: 400,
-				error: error.details[0].message.replace(/[/"]/g, ''),
+				error: error.details[0].message.replace(/[/"]/g, '')
 			});
 		} else {
 			const user = users.find((el) => el.email === req.body.email);
@@ -123,38 +113,75 @@ class UserController {
 								status: 200,
 								message: 'Admin is successfully logged in',
 								data: {
-									token: Helper.getToken(user),
-								},
+									token: Helper.getToken(user)
+								}
 							});
 						} else {
-							const {
-								id, firstName, lastName, email
-							} = user;
 							res.status(200).send({
 								status: 200,
 								message: 'User is successfully logged in',
 								data: {
-									token: Helper.getToken(user),
-									id,
-									firstName,
-									lastName,
-									email,
-								},
+									token: Helper.getToken(user)
+								}
 							});
 						}
 					} else {
 						res.status(401).send({
 							status: 401,
-							error: 'Password incorrect',
+							error: 'Password incorrect'
 						});
 					}
 				});
 			} else {
 				res.status(404).send({
 					status: 404,
-					error: 'User not found',
+					error: 'User not found'
 				});
 			}
+		}
+	}
+
+	makeAdmin(req, res) {
+		const user = users.find((el) => el.email === req.body.email);
+		if (user) {
+			user.isAdmin = true;
+			res.status(201).send({
+				status: 201,
+				message: 'Admin created',
+				data: {
+					isAdmin: user.isAdmin,
+				}
+
+			})
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'User not found'
+			});
+		}
+	}
+
+	deleteUser(req, res) {
+		const user = users.find((el) => el.email === req.body.email);
+		if (user) {
+			const { isAdmin } = req.payload;
+			if (isAdmin) {
+				users.splice(users.indexOf(user), 1);
+				res.status(200).send({
+					status: 200,
+					message: 'User successfully deleted'
+				});
+			} else {
+				res.status(403).send({
+					status: 403,
+					error: 'Not Authorized'
+				});
+			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'User not found'
+			});
 		}
 	}
 }
