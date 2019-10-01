@@ -7,7 +7,7 @@ import articleRoutes from './routes/articleRoutes';
 const app = express();
 const port = process.env.PORT || 3000;
 
-dotenv.config(); // configuring environment variables
+dotenv.config();
 
 // MIDDLEWARE
 app.use(bodyParser.json());

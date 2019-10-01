@@ -73,7 +73,7 @@ class UserController {
 						req.body.firstName,
 						req.body.lastName,
 						req.body.email,
-						hash, // we store the hashed version of the password
+						hash,
 						req.body.gender,
 						req.body.jobRole,
 						req.body.department,
@@ -147,7 +147,10 @@ class UserController {
 			user.isAdmin = true;
 			res.status(201).send({
 				status: 201,
-				message: 'Admin created'
+				message: 'Admin created',
+				data: {
+					isAdmin: user.isAdmin,
+				}
 
 			})
 		} else {

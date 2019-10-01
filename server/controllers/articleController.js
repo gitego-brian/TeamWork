@@ -89,7 +89,7 @@ class ArticleController {
 		const authorId = req.payload.id;
 		const articleToUpdate = Helper.findOne(req.params.articleID, articles);
 		if (articleToUpdate) {
-			if (req.payload.isAdmin || articleToUpdate.authorId === authorId) {
+			if (articleToUpdate.authorId === authorId) {
 				if (!title && !article) {
 					res.status(400).send({
 						status: 400,

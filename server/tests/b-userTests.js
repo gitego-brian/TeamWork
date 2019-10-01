@@ -1,25 +1,18 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../app';
+import mockData from './mockData';
 
 chai.use(chaiHttp);
 chai.should();
 
+let token;
 let adminToken;
 
 // Signing up
 describe('Employee signup test: case 1', () => {
 	it('it should sign up an employee', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'Stark',
-			email: 'bstark@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering',
-			address: 'Houston'
-		};
+		const data = mockData.signupComplete1;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -35,13 +28,7 @@ describe('Employee signup test: case 1', () => {
 
 
 	it('it should not create an employee account with incomplete info', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'stark',
-			email: 'bstark@gmail.com',
-			password: 'Password@123',
-			department: 'engineering'
-		};
+		const data = mockData.signupIncomplete;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -54,15 +41,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password is less than 8 characters', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'stark',
-			email: 'bstark@gmail.com',
-			password: 'Pass@1',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupShortPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -75,15 +54,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password contains no numbers', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'stark',
-			email: 'bstark@gmail.com',
-			password: 'Passwowow@!oword',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupNoNumPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -96,15 +67,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password contains no special characters ', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'stark',
-			email: 'bstark@gmail.com',
-			password: 'Password123',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupNoCharPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -117,15 +80,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password contains no uppercase letter ', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'stark',
-			email: 'bstark@gmail.com',
-			password: 'password@123',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupNoUcasePwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -138,15 +93,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the firstname is numbers', (done) => {
-		const data = {
-			firstName: '1234',
-			lastName: 'stark',
-			email: 'bstark@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupNumFname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -159,15 +106,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the lastName is numbers', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: '1234',
-			email: 'bstark@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupNumLname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -180,15 +119,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the firstName contains a whitespace', (done) => {
-		const data = {
-			firstName: 'Bran Bob',
-			lastName: '1234',
-			email: 'bstark@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupSpaceFname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -201,15 +132,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the lastName contains a whitespace', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'Stark Man',
-			email: 'bstark@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupSpaceLname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -222,15 +145,7 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when gender is not clear', (done) => {
-		const data = {
-			firstName: 'Bran',
-			lastName: 'stark',
-			email: 'bstark@gmail.com',
-			password: 'Password@123',
-			gender: 'ma',
-			jobRole: 'Software engineer',
-			department: 'engineering'
-		};
+		const data = mockData.signupGenderUnclear;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -245,15 +160,7 @@ describe('Employee signup test: case 1', () => {
 
 describe('Employee sign up test: case 2', () => {
 	beforeEach('sign up an employee', (done) => {
-		const data = {
-			firstName: 'Ben',
-			lastName: 'Gisa',
-			email: 'bengisa@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Data analyst',
-			department: 'Investigation'
-		};
+		const data = mockData.signupComplete2;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -264,15 +171,7 @@ describe('Employee sign up test: case 2', () => {
 	});
 
 	it('it should not sign up an already existing employee', (done) => {
-		const data = {
-			firstName: 'Ben',
-			lastName: 'Gisa',
-			email: 'bengisa@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Data analyst',
-			department: 'Investigation'
-		};
+		const data = mockData.signupComplete2;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -289,15 +188,7 @@ describe('Employee sign up test: case 2', () => {
 
 describe('Employee Login test', () => {
 	beforeEach('Create an employee', (done) => {
-		const data = {
-			firstName: 'Ben',
-			lastName: 'Gisa',
-			email: 'bengisa@gmail.com',
-			password: 'Password@123',
-			gender: 'male',
-			jobRole: 'Data analyst',
-			department: 'Investigation'
-		};
+		const data = mockData.signupComplete2;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(data)
@@ -307,14 +198,12 @@ describe('Employee Login test', () => {
 			});
 	});
 	it('it should login an employee', (done) => {
-		const data = {
-			email: 'bengisa@gmail.com',
-			password: 'Password@123'
-		};
+		const data = mockData.loginComplete;
 		chai.request(app)
 			.post('/api/v1/auth/signin')
 			.send(data)
 			.end((_err, res) => {
+				token = res.body.data.token;
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
 				res.body.should.have.property('data');
@@ -324,7 +213,7 @@ describe('Employee Login test', () => {
 	});
 	it('it should not login an employee with no email', (done) => {
 		const data = {
-			password: 'Password@123'
+			password: mockData.loginComplete.password
 		};
 		chai.request(app)
 			.post('/api/v1/auth/signin')
@@ -338,7 +227,7 @@ describe('Employee Login test', () => {
 	});
 	it('it should not login an employee with no password', (done) => {
 		const data = {
-			email: 'bengisa@gmail.com',
+			email: mockData.loginComplete.email
 		};
 		chai.request(app)
 			.post('/api/v1/auth/signin')
@@ -352,10 +241,7 @@ describe('Employee Login test', () => {
 	});
 
 	it('it should not login an employee with wrong password', (done) => {
-		const data = {
-			email: 'bengisa@gmail.com',
-			password: 'Password@345'
-		};
+		const data = mockData.loginWrongPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signin')
 			.send(data)
@@ -368,10 +254,7 @@ describe('Employee Login test', () => {
 	});
 
 	it('it should not login an employee who does not have account', (done) => {
-		const data = {
-			email: 'brucesangwa@gmail.com',
-			password: 'Password@123'
-		};
+		const data = mockData.loginNoAccount;
 		chai.request(app)
 			.post('/api/v1/auth/signin')
 			.send(data)
@@ -385,7 +268,7 @@ describe('Employee Login test', () => {
 
 	it('should create an admin from a normal user', (done) => {
 		const data = {
-			email: 'bengisa@gmail.com'
+			email: mockData.loginComplete.email
 		};
 		chai.request(app)
 			.post('/api/v1/auth/users')
@@ -394,13 +277,15 @@ describe('Employee Login test', () => {
 				res.should.have.status(201);
 				res.body.should.have.property('status').eql(201);
 				res.body.should.have.property('message').eql('Admin created');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('isAdmin').eql(true);
 				done();
 			});
 	});
 
 	it('should not create an admin from a non existing user', (done) => {
 		const data = {
-			email: 'brucesawa@gmail.com'
+			email: mockData.loginNoAccount.email
 		};
 		chai.request(app)
 			.post('/api/v1/auth/users')
@@ -415,15 +300,16 @@ describe('Employee Login test', () => {
 
 	it('Non-admin cannot delete a user', (done) => {
 		const data = {
-			email: 'brucesangwa@gmail.com'
+			email: mockData.signupComplete1.email
 		};
 		chai.request(app)
-			.post('/api/v1/auth/users')
+			.delete('/api/v1/auth/users')
+			.set('Authorization', `Bearer ${token}`)
 			.send(data)
 			.end((_err, res) => {
-				res.should.have.status(404);
-				res.body.should.have.property('status').eql(404);
-				res.body.should.have.property('error').eql('User not found');
+				res.should.have.status(403);
+				res.body.should.have.property('status').eql(403);
+				res.body.should.have.property('error').eql('Not Authorized');
 				done();
 			});
 	});
@@ -433,15 +319,13 @@ describe('Employee Login test', () => {
 describe('Deleting a user', () => {
 	beforeEach('login the newly created admin', (done) => {
 		const data = {
-			email: 'bengisa@gmail.com',
-			password: 'Password@123'
+			email: mockData.loginComplete.email,
+			password: mockData.loginComplete.password
 		};
 		chai.request(app)
 			.post('/api/v1/auth/signin')
 			.send(data)
 			.end((_err, res) => {
-				console.log(res.body.token);
-				
 				adminToken = res.body.data.token;
 				done();
 			});
@@ -463,9 +347,9 @@ describe('Deleting a user', () => {
 			});
 	});
 
-	it('admin delete a user', (done) => {
+	it('admin can delete a user', (done) => {
 		const data = {
-			email: 'bstark@gmail.com'
+			email: mockData.signupComplete1.email
 		};
 		chai.request(app)
 			.delete('/api/v1/auth/users')
