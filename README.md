@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/gitego-brian/TeamWork.svg?branch=develop)](https://travis-ci.org/gitego-brian/TeamWork) [![Coverage Status](https://coveralls.io/repos/github/gitego-brian/TeamWork/badge.svg?branch=develop)](https://coveralls.io/github/gitego-brian/TeamWork?branch=develop)
 
+[Documentation](https://documenter.getpostman.com/view/8741834/SVtPXARF?version=latest#de7dbd0a-5fdb-4284-9d22-31a55cfa6a24)
+
 ## What is it?
 
 Teamwork is an internal social network for organizations’ employees. The goal of this application is to facilitate more interaction between colleagues and facilitate team bonding. Employees can use TeamWork to share ideas through articles.
