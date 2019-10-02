@@ -3,10 +3,6 @@
     margin: 0;
     box-sizing: border-box;
 }
-
-html {
-}
-
 /*HOMEPAGE***************/
 * {
     padding: 0;
@@ -38,6 +34,9 @@ html {
 img[alt=logo] {
     height: 50px;
     width: 50px;
+}
+img[alt=avengers]{
+    width: 100%
 }
 
 .header .nav-links {
