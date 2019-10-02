@@ -12,10 +12,9 @@ let adminToken;
 // Signing up
 describe('Employee signup test: case 1', () => {
 	it('it should sign up an employee', (done) => {
-		const data = mockData.signupComplete1;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupComplete1)
 			.end((_err, res) => {
 				res.should.have.status(201);
 				res.body.should.have.property('status').eql(201);
@@ -28,10 +27,9 @@ describe('Employee signup test: case 1', () => {
 
 
 	it('it should not create an employee account with incomplete info', (done) => {
-		const data = mockData.signupIncomplete;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupIncomplete)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -41,10 +39,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password is less than 8 characters', (done) => {
-		const data = mockData.signupShortPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupShortPwd)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -54,10 +51,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password contains no numbers', (done) => {
-		const data = mockData.signupNoNumPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupNoNumPwd)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -67,10 +63,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password contains no special characters ', (done) => {
-		const data = mockData.signupNoCharPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupNoCharPwd)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -80,10 +75,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when password contains no uppercase letter ', (done) => {
-		const data = mockData.signupNoUcasePwd;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupNoUcasePwd)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -93,10 +87,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the firstname is numbers', (done) => {
-		const data = mockData.signupNumFname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupNumFname)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -106,10 +99,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the lastName is numbers', (done) => {
-		const data = mockData.signupNumLname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupNumLname)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -119,10 +111,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the firstName contains a whitespace', (done) => {
-		const data = mockData.signupSpaceFname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupSpaceFname)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -132,10 +123,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when the lastName contains a whitespace', (done) => {
-		const data = mockData.signupSpaceLname;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupSpaceLname)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -145,10 +135,9 @@ describe('Employee signup test: case 1', () => {
 	});
 
 	it('it should not sign up an employee  account when gender is not clear', (done) => {
-		const data = mockData.signupGenderUnclear;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupGenderUnclear)
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -160,10 +149,9 @@ describe('Employee signup test: case 1', () => {
 
 describe('Employee sign up test: case 2', () => {
 	beforeEach('sign up an employee', (done) => {
-		const data = mockData.signupComplete2;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupComplete2)
 			.end((error, _res) => {
 				if (error) done(error);
 				done();
@@ -171,10 +159,9 @@ describe('Employee sign up test: case 2', () => {
 	});
 
 	it('it should not sign up an already existing employee', (done) => {
-		const data = mockData.signupComplete2;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupComplete2)
 			.end((_err, res) => {
 				res.body.should.have.property('status').eql(403);
 				res.body.should.have.property('error').eql('Email already exists');
@@ -188,20 +175,18 @@ describe('Employee sign up test: case 2', () => {
 
 describe('Employee Login test', () => {
 	beforeEach('Create an employee', (done) => {
-		const data = mockData.signupComplete2;
 		chai.request(app)
 			.post('/api/v1/auth/signup')
-			.send(data)
+			.send(mockData.signupComplete2)
 			.end((error) => {
 				if (error) done(error);
 				done();
 			});
 	});
 	it('it should login an employee', (done) => {
-		const data = mockData.loginComplete;
 		chai.request(app)
 			.post('/api/v1/auth/signin')
-			.send(data)
+			.send(mockData.loginComplete)
 			.end((_err, res) => {
 				token = res.body.data.token;
 				res.should.have.status(200);
@@ -217,7 +202,7 @@ describe('Employee Login test', () => {
 		};
 		chai.request(app)
 			.post('/api/v1/auth/signin')
-			.send(data)
+			.send(({}))
 			.end((_err, res) => {
 				res.should.have.status(400);
 				res.body.should.have.property('status').eql(400);
@@ -241,10 +226,9 @@ describe('Employee Login test', () => {
 	});
 
 	it('it should not login an employee with wrong password', (done) => {
-		const data = mockData.loginWrongPwd;
 		chai.request(app)
 			.post('/api/v1/auth/signin')
-			.send(data)
+			.send(mockData.loginWrongPwd)
 			.end((err, res) => {
 				res.should.have.status(401);
 				res.body.should.have.property('status').eql(401);
@@ -254,11 +238,10 @@ describe('Employee Login test', () => {
 	});
 
 	it('it should not login an employee who does not have account', (done) => {
-		const data = mockData.loginNoAccount;
 		chai.request(app)
 			.post('/api/v1/auth/signin')
-			.send(data)
-			.end((err, res) => {
+			.send(mockData.loginNoAccount)
+			.end((_err, res) => {
 				res.should.have.status(404);
 				res.body.should.have.property('status').eql(404);
 				res.body.should.have.property('error').eql('User not found');
