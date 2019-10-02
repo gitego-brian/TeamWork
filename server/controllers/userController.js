@@ -57,8 +57,8 @@ class UserController {
 				});
 			}
 		} else if (users.find((el) => el.email === req.body.email)) {
-			res.status(403).send({
-				status: 403,
+			res.status(409).send({
+				status: 409,
 				error: 'Email already exists'
 			});
 		} else {

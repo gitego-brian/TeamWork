@@ -163,7 +163,8 @@ describe('Employee sign up test: case 2', () => {
 			.post('/api/v1/auth/signup')
 			.send(mockData.signupComplete2)
 			.end((_err, res) => {
-				res.body.should.have.property('status').eql(403);
+				res.should.have.status(409);
+				res.body.should.have.property('status').eql(409);
 				res.body.should.have.property('error').eql('Email already exists');
 			});
 		done();
@@ -296,7 +297,6 @@ describe('Employee Login test', () => {
 				done();
 			});
 	});
-
 });
 
 describe('Deleting a user', () => {
