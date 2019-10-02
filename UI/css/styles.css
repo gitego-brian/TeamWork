@@ -60,7 +60,7 @@ img[alt=avengers]{
     box-shadow: 0 0 5px rgb(75, 76, 82);
     background-color: #2c2537;
     border: none;
-    cursor: default;
+    cursor: pointer;
     text-align: center
 }
 
@@ -329,6 +329,7 @@ img[alt=user] {
     height: 50px;
     width: 50px;
     border-radius: 50%;
+    cursor: pointer;
     box-shadow: 0 0 5px #c2b2d4;
 
 }
@@ -497,6 +498,7 @@ img[alt=user] {
 }
 
 .article-title {
+    cursor: pointer;
     font-weight: bold;
     margin-top: 10px;
     margin-bottom: 30px;
@@ -721,6 +723,7 @@ textarea {
     text-decoration: none;
     display: block;
     text-align: center;
+    cursor: pointer;
 }
 .drop-content a:hover{
     background-color: #2c2537;
