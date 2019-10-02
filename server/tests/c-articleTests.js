@@ -105,6 +105,18 @@ describe('Creating an article', () => {
 				done();
 			});
 	});
+	it('Employee should not create an article if article already exists', (done) => {
+		chai.request(app)
+			.post('/api/v1/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.article)
+			.end((_err, res) => {
+				res.should.have.status(409);
+				res.body.should.have.property('status').eql(409);
+				res.body.should.have.property('error').eql('Article already exists');
+				done();
+			});
+	});
 });
 // VIEWING AND SHARING ARTICLES
 describe('Viewing and sharing articles', () => {
@@ -312,11 +324,65 @@ describe('Viewing and sharing articles', () => {
 	});
 });
 
+describe('Consecutive same comments', () => {
+	it('create an article', (done) => {
+		chai.request(app)
+			.post('/api/v1/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.article2)
+			.end((_err, res) => {
+				articleId = res.body.data.id;
+				res.should.have.status(201);
+				res.body.should.have.property('status').eql(201);
+				done();
+			});
+	});
+
+	it('Employee can comment on an article', (done) => {
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/comments`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.comment)
+			.end((_err, res) => {
+				res.should.have.status(201);
+				res.body.should.have.property('status').eql(201);
+				res.body.should.have.property('message').eql('Comment posted successfully');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('articleTitle');
+				res.body.data.should.have.property('comment');
+				res.body.data.comment.should.have.property('comment').eql('Great');
+				done();
+			});
+	});
+	it('Employee cannot comment post the same comment on an article two consecutive times', (done) => {
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/comments`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.comment)
+			.end((_err, res) => {
+				res.should.have.status(409);
+				res.should.have.property('body');
+				res.body.should.be.a('object');
+				res.body.should.have.property('status').eql(409);
+				res.body.should.have.property('error').eql('Comment already exists');
+				done();
+			});
+	});
+	it('delete an article', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, res) => {
+				res.should.have.status(200);
+				res.body.should.have.property('status').eql(200);
+				done();
+			});
+	});
+});
 // Employee can edit, delete and update his articles
 
 describe('Employee can change his articles', () => {
 	beforeEach('create an article', (done) => {
-
 		chai.request(app)
 			.post('/api/v1/articles/')
 			.set('Authorization', `Bearer ${token}`)
@@ -398,9 +464,7 @@ describe('Employee can change his articles', () => {
 			.end((_err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('data');
 				res.body.should.have.property('message').eql('Article successfully deleted');
-				res.body.data.should.have.property('article');
 				done();
 			});
 	});
@@ -459,7 +523,6 @@ describe('Employee can change his articles', () => {
 	});
 
 	it('Employee cannot comment an article if not logged in', (done) => {
-
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments`)
 			.send(mockData.comment)
@@ -564,9 +627,7 @@ describe('Employee can change his articles', () => {
 			.end((_err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('data');
 				res.body.should.have.property('message').eql('Article successfully deleted');
-				res.body.data.should.have.property('article');
 				done();
 			});
 	});
@@ -613,7 +674,6 @@ describe('Comments', () => {
 	});
 
 	it('Employee can flag a comment', (done) => {
-
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
 			.set('Authorization', `Bearer ${token}`)
@@ -768,9 +828,7 @@ describe('Comments', () => {
 			.end((_err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('data');
 				res.body.should.have.property('message').eql('Comment successfully deleted');
-				res.body.data.should.have.property('comment');
 				done();
 			});
 	});
@@ -841,9 +899,7 @@ describe('Deleting flagged comments', () => {
 			.end((_err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('data');
 				res.body.should.have.property('message').eql('Comment successfully deleted');
-				res.body.data.should.have.property('comment');
 				done();
 			});
 	});

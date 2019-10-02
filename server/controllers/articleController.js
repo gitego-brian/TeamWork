@@ -35,8 +35,8 @@ class ArticleController {
 		} else {
 			const match = articles.find((el) => el.title === req.body.title);
 			if (match) {
-				res.status(401).send({
-					status: 401,
+				res.status(409).send({
+					status: 409,
 					error: 'Article already exists'
 				});
 			} else {
@@ -54,11 +54,11 @@ class ArticleController {
 					status: 201,
 					message: 'Article successfully created',
 					data: {
-						id,
 						title,
+						authorName,
 						article,
+						id,
 						authorId,
-						authorName
 					}
 				});
 			}
@@ -201,9 +201,6 @@ class ArticleController {
 				res.status(200).send({
 					status: 200,
 					message: 'Article successfully deleted',
-					data: {
-						article
-					}
 				});
 			} else {
 				res.status(403).send({
@@ -244,8 +241,8 @@ class ArticleController {
 					(el) => el.comment === req.body.comment
 				);
 				if (match) {
-					res.status(401).send({
-						status: 401,
+					res.status(409).send({
+						status: 409,
 						error: 'Comment already exists'
 					});
 				} else {
@@ -339,9 +336,6 @@ class ArticleController {
 					res.status(200).send({
 						status: 200,
 						message: 'Comment successfully deleted',
-						data: {
-							comment
-						}
 					});
 				} else if (!comment.flags.length && req.payload.isAdmin) {
 					res.status(403).send({
