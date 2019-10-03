@@ -22,6 +22,40 @@ class ArticleController {
 		});
 	}
 
+	getFlaggedArticles(req, res) {
+		if (req.payload.isAdmin) {
+			const flaggedArticles = [];
+			articles.forEach((el) => {
+				if (el.flags.length) {
+					flaggedArticles.push(el);
+				}
+			});
+			if (!flaggedArticles.length) {
+				res.status(404).send({
+					status: 404,
+					message: 'No flagged articles',
+				});
+			} else {
+				const sortedArticles = flaggedArticles.sort(
+					(a, b) => new Moment(b.createdOn).format('YYYYMMDD')
+			- new Moment(a.createdOn).format('YYYYMMDD')
+				);
+				res.status(200).send({
+					status: 200,
+					message: 'Flagged articles',
+					data: {
+						articles: sortedArticles
+					}
+				});
+			}
+		} else {
+			res.status(403).send({
+				status: 403,
+				error: 'Not Authorized'
+			});
+		}
+	}
+
 	newArticle(req, res) {
 		const { title, article } = req.body;
 		const { error } = schema.articleSchema.validate({
@@ -88,7 +122,6 @@ class ArticleController {
 
 	updateArticle(req, res) {
 		const { title, article } = req.body;
-
 		const authorId = req.payload.id;
 		const articleToUpdate = Helper.findOne(req.params.articleID, articles);
 		if (articleToUpdate) {
@@ -109,6 +142,7 @@ class ArticleController {
 				if (article) {
 					articleToUpdate.article = article;
 				}
+				articleToUpdate.flags = [];
 				const updatedArticle = articleToUpdate;
 				updatedArticle.updatedOn = Moment().format('YYYY-MMM-DD');
 				res.status(200).send({
@@ -170,21 +204,35 @@ class ArticleController {
 			});
 			return;
 		}
-
-		const { firstName, lastName } = req.payload;
+		const { firstName, lastName, id } = req.payload;
 		const { articleID } = req.params;
 		const article = Helper.findOne(articleID, articles);
 		if (article) {
-			const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
-			article.flags.push(flag);
-			res.status(201).send({
-				status: 201,
-				message: 'Article flagged!',
-				data: {
-					flag,
-					article
+			if (id === article.authorId) {
+				res.status(400).send({
+					status: 400,
+					error: 'You cannot flag your own article',
+				});
+			} else {
+				const match = article.flags.find((el) => el.authorId === id);
+				if (match) {
+					res.status(409).send({
+						status: 409,
+						error: 'You have already flagged that article',
+					});
+				} else {
+					const flag = new Flag(req.body.reason, `${firstName} ${lastName}`, id);
+					article.flags.push(flag);
+					res.status(201).send({
+						status: 201,
+						message: 'Article flagged!',
+						data: {
+							flag,
+							article
+						}
+					});
 				}
-			});
+			}
 		} else {
 			res.status(404).send({
 				status: 404,
@@ -291,22 +339,37 @@ class ArticleController {
 			return;
 		}
 
-		const { firstName, lastName } = req.payload;
+		const { firstName, lastName, id } = req.payload;
 		const { commentID } = req.params;
 		const article = Helper.findOne(req.params.articleID, articles);
 		if (article) {
 			const comment = Helper.findOne(commentID, article.comments);
 			if (comment) {
-				const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
-				comment.flags.push(flag);
-				res.status(201).send({
-					status: 201,
-					message: 'Comment flagged!',
-					data: {
-						flag,
-						comment
+				if (id === comment.authorId) {
+					res.status(400).send({
+						status: 400,
+						error: 'You cannot flag your own comment',
+					});
+				} else {
+					const match = comment.flags.find((el) => el.authorId === id);
+					if (match) {
+						res.status(409).send({
+							status: 409,
+							error: 'You have already flagged that comment',
+						});
+					} else {
+						const flag = new Flag(req.body.reason, `${firstName} ${lastName}`, id);
+						comment.flags.push(flag);
+						res.status(201).send({
+							status: 201,
+							message: 'Comment flagged!',
+							data: {
+								flag,
+								comment
+							}
+						});
 					}
-				});
+				}
 			} else {
 				res.status(404).send({
 					status: 404,
@@ -330,6 +393,7 @@ class ArticleController {
 				const { id } = req.payload;
 				if ((comment.flags.length && req.payload.isAdmin) || id === comment.authorId) {
 					article.comments.splice(article.comments.indexOf(comment), 1);
+
 					res.status(200).send({
 						status: 200,
 						message: 'Comment successfully deleted',

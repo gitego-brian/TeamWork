@@ -33,12 +33,21 @@ app.use('/*', (_req, res) => {
 });
 
 app.use((error, _req, res, _next) => {
-	res.status(error.status || 500);
-	res.json({
-		error: {
-			message: error.message
-		}
-	});
+	if (error.status === 400) {
+		res.status(error.status || 500);
+		res.json({
+			error: {
+				message: 'Syntax error, Please double check your input'
+			}
+		});
+	} else {
+		res.status(error.status || 500);
+		res.json({
+			error: {
+				message: 'Oops, Server down'
+			}
+		});
+	}
 });
 
 app.listen(port);
