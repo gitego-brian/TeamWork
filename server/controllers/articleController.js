@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 import Moment from 'moment';
 import Article from '../models/articleModel';
 import Comment from '../models/commentModel';
@@ -27,41 +28,43 @@ class ArticleController {
 			title,
 			article
 		});
-		if (error) {
+		try {
+			if (error) throw error.details[0].message.replace(/[/"]/g, '');
+		} catch (err) {
 			res.status(400).send({
 				status: 400,
-				error: error.details[0].message.replace(/[/"]/g, '')
+				error: err
+			});
+			return;
+		}
+		const match = articles.find((el) => el.title === req.body.title);
+		if (match) {
+			res.status(409).send({
+				status: 409,
+				error: 'Article already exists'
 			});
 		} else {
-			const match = articles.find((el) => el.title === req.body.title);
-			if (match) {
-				res.status(409).send({
-					status: 409,
-					error: 'Article already exists'
-				});
-			} else {
-				const { firstName, lastName, id: authorId } = req.payload;
-				const authorName = `${firstName} ${lastName}`;
-				const newArticle = new Article(
-					req.body.title,
-					req.body.article,
+			const { firstName, lastName, id: authorId } = req.payload;
+			const authorName = `${firstName} ${lastName}`;
+			const newArticle = new Article(
+				req.body.title,
+				req.body.article,
+				authorId,
+				authorName
+			);
+			const { title, article, id } = newArticle;
+			articles.push(newArticle);
+			res.status(201).send({
+				status: 201,
+				message: 'Article successfully created',
+				data: {
+					title,
+					authorName,
+					article,
+					id,
 					authorId,
-					authorName
-				);
-				const { title, article, id } = newArticle;
-				articles.push(newArticle);
-				res.status(201).send({
-					status: 201,
-					message: 'Article successfully created',
-					data: {
-						title,
-						authorName,
-						article,
-						id,
-						authorId,
-					}
-				});
-			}
+				}
+			});
 		}
 	}
 
@@ -90,28 +93,31 @@ class ArticleController {
 		const articleToUpdate = Helper.findOne(req.params.articleID, articles);
 		if (articleToUpdate) {
 			if (articleToUpdate.authorId === authorId) {
-				if (!title && !article) {
+				try {
+					if (!title && !article) throw 'Can\'t update if no changes made';
+				} catch (err) {
 					res.status(400).send({
 						status: 400,
-						error: "Can't update if no changes made"
+						error: err
 					});
-				} else {
-					if (title) {
-						articleToUpdate.title = title;
-					}
-					if (article) {
-						articleToUpdate.article = article;
-					}
-					const updatedArticle = articleToUpdate;
-					updatedArticle.updatedOn = Moment().format('YYYY-MMM-DD');
-					res.status(200).send({
-						status: 200,
-						message: 'Article successfully edited',
-						data: {
-							updatedArticle
-						}
-					});
+					return;
 				}
+
+				if (title) {
+					articleToUpdate.title = title;
+				}
+				if (article) {
+					articleToUpdate.article = article;
+				}
+				const updatedArticle = articleToUpdate;
+				updatedArticle.updatedOn = Moment().format('YYYY-MMM-DD');
+				res.status(200).send({
+					status: 200,
+					message: 'Article successfully edited',
+					data: {
+						updatedArticle
+					}
+				});
 			} else {
 				res.status(403).send({
 					status: 403,
@@ -151,62 +157,63 @@ class ArticleController {
 		const { error } = schema.flagSchema.validate({
 			reason
 		});
-		if (!reason) {
+		try {
+			if (!reason) throw 'Can\'t flag article, no reason provided';
+			if (error) {
+				if (error.details[0].type === 'string.min') throw 'That reason may not be understandable, Care to elaborate?';
+				if (error.details[0].type === 'any.required') throw 'Can\'t flag article, no reason provided';
+			}
+		} catch (err) {
 			res.status(400).send({
 				status: 400,
-				error: 'Can\'t flag article, no reason provided'
+				error: err
 			});
-		} else if (error) {
-			if (error.details[0].type === 'string.min') {
-				res.status(400).send({
-					status: 400,
-					error: 'That reason may not be understandable, Care to elaborate?'
-				});
-			} else if (error.details[0].type === 'any.required') {
-				res.status(400).send({
-					status: 400,
-					error: "Can't flag article, no reason provided"
-				});
-			}
+			return;
+		}
+
+		const { firstName, lastName } = req.payload;
+		const { articleID } = req.params;
+		const article = Helper.findOne(articleID, articles);
+		if (article) {
+			const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
+			article.flags.push(flag);
+			res.status(201).send({
+				status: 201,
+				message: 'Article flagged!',
+				data: {
+					flag,
+					article
+				}
+			});
 		} else {
-			const { firstName, lastName } = req.payload;
-			const { articleID } = req.params;
-			const article = Helper.findOne(articleID, articles);
-			if (article) {
-				const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
-				article.flags.push(flag);
-				res.status(201).send({
-					status: 201,
-					message: 'Article flagged!',
-					data: {
-						flag,
-						article
-					}
-				});
-			} else {
-				res.status(404).send({
-					status: 404,
-					error: 'Article not found'
-				});
-			}
+			res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
 		}
 	}
 
 	deleteArticle(req, res) {
-		const authorId = req.payload.id;
-		const article = Helper.findOne(req.params.articleID, articles);
+		const { articleID } = req.params;
+		const article = Helper.findOne(articleID, articles);
 		if (article) {
-			if (article.authorId === authorId || req.payload.isAdmin) {
+			const { id } = req.payload;
+			if ((article.flags.length && req.payload.isAdmin) || id === article.authorId) {
 				articles.splice(articles.indexOf(article), 1);
 				res.status(200).send({
 					status: 200,
 					message: 'Article successfully deleted',
 				});
 			} else {
-				res.status(403).send({
-					status: 403,
-					error: 'Not Authorized'
-				});
+				try {
+					if (!article.flags.length && req.payload.isAdmin) throw 'Cannot delete an unflagged article';
+					else throw 'Not Authorized';
+				} catch (err) {
+					res.status(403).send({
+						status: 403,
+						error: err
+					});
+				}
 			}
 		} else {
 			res.status(404).send({
@@ -221,49 +228,47 @@ class ArticleController {
 		const { error } = schema.commentSchema.validate({
 			comment
 		});
-		if (error) {
-			if (error.details[0].type === 'any.required') {
-				res.status(400).send({
-					status: 400,
-					error: "You didn't write anything"
+		try {
+			if (error) {
+				if (error.details[0].type === 'any.required') throw 'You didn\'t write anything';
+				else throw error.details[0].message.replace(/[/"]/g, '');
+			}
+		} catch (err) {
+			res.status(400).send({
+				status: 400,
+				error: err
+			});
+			return;
+		}
+		const authorId = req.payload.id;
+		const article = Helper.findOne(req.params.articleID, articles);
+		if (article) {
+			const match = article.comments.find(
+				(el) => el.comment === req.body.comment
+			);
+			if (match) {
+				res.status(409).send({
+					status: 409,
+					error: 'Comment already exists'
 				});
 			} else {
-				res.status(400).send({
-					status: 400,
-					error: error.details[0].message.replace(/[/"]/g, '')
+				const newComment = new Comment(req.body.comment, authorId);
+				article.comments.push(newComment);
+				res.status(201).send({
+					status: 201,
+					message: 'Comment posted successfully',
+					data: {
+						articleTitle: article.title,
+						article: article.article,
+						comment: newComment
+					}
 				});
 			}
 		} else {
-			const authorId = req.payload.id;
-			const article = Helper.findOne(req.params.articleID, articles);
-			if (article) {
-				const match = article.comments.find(
-					(el) => el.comment === req.body.comment
-				);
-				if (match) {
-					res.status(409).send({
-						status: 409,
-						error: 'Comment already exists'
-					});
-				} else {
-					const newComment = new Comment(req.body.comment, authorId);
-					article.comments.push(newComment);
-					res.status(201).send({
-						status: 201,
-						message: 'Comment posted successfully',
-						data: {
-							articleTitle: article.title,
-							article: article.article,
-							comment: newComment
-						}
-					});
-				}
-			} else {
-				res.status(404).send({
-					status: 404,
-					error: 'Article not found'
-				});
-			}
+			res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
 		}
 	}
 
@@ -272,52 +277,47 @@ class ArticleController {
 		const { error } = schema.flagSchema.validate({
 			reason
 		});
-		if (!reason) {
+		try {
+			if (!reason) throw 'Can\'t flag comment, no reason provided';
+			if (error) {
+				if (error.details[0].type === 'string.min') throw 'That reason may not be understandable, Care to elaborate?';
+				if (error.details[0].type === 'any.required') throw 'Can\'t flag comment, no reason provided';
+			}
+		} catch (err) {
 			res.status(400).send({
 				status: 400,
-				error: "Can't flag comment, no reason provided"
+				error: err
 			});
-		} else if (error) {
-			if (error.details[0].type === 'string.min') {
-				res.status(400).send({
-					status: 400,
-					error: 'That reason may not be understandable, Care to elaborate?'
+			return;
+		}
+
+		const { firstName, lastName } = req.payload;
+		const { commentID } = req.params;
+		const article = Helper.findOne(req.params.articleID, articles);
+		if (article) {
+			const comment = Helper.findOne(commentID, article.comments);
+			if (comment) {
+				const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
+				comment.flags.push(flag);
+				res.status(201).send({
+					status: 201,
+					message: 'Comment flagged!',
+					data: {
+						flag,
+						comment
+					}
 				});
-			} else if (error.details[0].type === 'any.required') {
-				res.status(400).send({
-					status: 400,
-					error: "Can't flag comment, no reason provided"
-				});
-			}
-		} else {
-			const { firstName, lastName } = req.payload;
-			const { commentID } = req.params;
-			const article = Helper.findOne(req.params.articleID, articles);
-			if (article) {
-				const comment = Helper.findOne(commentID, article.comments);
-				if (comment) {
-					const flag = new Flag(req.body.reason, `${firstName} ${lastName}`);
-					comment.flags.push(flag);
-					res.status(201).send({
-						status: 201,
-						message: 'Comment flagged!',
-						data: {
-							flag,
-							comment
-						}
-					});
-				} else {
-					res.status(404).send({
-						status: 404,
-						error: 'Comment not found'
-					});
-				}
 			} else {
 				res.status(404).send({
 					status: 404,
-					error: 'Article not found'
+					error: 'Comment not found'
 				});
 			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
 		}
 	}
 
@@ -328,30 +328,22 @@ class ArticleController {
 			const comment = Helper.findOne(commentID, article.comments);
 			if (comment) {
 				const { id } = req.payload;
-				if (
-					(comment.flags.length && req.payload.isAdmin)
-          || id === comment.authorId
-				) {
+				if ((comment.flags.length && req.payload.isAdmin) || id === comment.authorId) {
 					article.comments.splice(article.comments.indexOf(comment), 1);
 					res.status(200).send({
 						status: 200,
 						message: 'Comment successfully deleted',
 					});
-				} else if (!comment.flags.length && req.payload.isAdmin) {
-					res.status(403).send({
-						status: 403,
-						error: 'Cannot delete an unflagged comment'
-					});
-				} else if (comment.flags.length && !req.payload.isAdmin) {
-					res.status(403).send({
-						status: 403,
-						error: 'Not Authorized'
-					});
 				} else {
-					res.status(403).send({
-						status: 403,
-						error: 'Not Authorized'
-					});
+					try {
+						if (!comment.flags.length && req.payload.isAdmin) throw 'Cannot delete an unflagged comment';
+						else throw 'Not Authorized';
+					} catch (err) {
+						res.status(403).send({
+							status: 403,
+							error: err
+						});
+					}
 				}
 			} else {
 				res.status(404).send({
@@ -367,5 +359,4 @@ class ArticleController {
 		}
 	}
 }
-
 export default new ArticleController();
