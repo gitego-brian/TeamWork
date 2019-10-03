@@ -1,5 +1,5 @@
-const uuidv1 = require('uuid/v1');
-const Moment = require('moment');
+import uuidv1 from 'uuid/v1';
+import Moment from 'moment';
 
 class Comment {
 	constructor(_comment, _authorId) {

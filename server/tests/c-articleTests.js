@@ -14,7 +14,7 @@ let commentId;
 
 // Articles
 describe('Creating an article', () => {
-	it('first sign up an employee', (done) => { 
+	it('first sign up an employee', (done) => {
 		chai.request(app)
 			.post('/api/v1/auth/signup')
 			.send(mockData.baraka)
@@ -200,7 +200,7 @@ describe('Viewing and sharing articles', () => {
 	it('Employee can flag an article', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/flags`)
-			.set('Authorization', `Bearer ${token}`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
 			.send(mockData.flag)
 			.end((_err, res) => {
 				res.should.have.status(201);
@@ -620,7 +620,65 @@ describe('Employee can change his articles', () => {
 			});
 	});
 
-	it('Admin can delete another employee\'s article', (done) => {
+	it('Admin cannot delete an unflagged article', (done) => {
+		chai.request(app)
+			.delete(`/api/v1/articles/${articleId}`)
+			.set('Authorization', `Bearer ${adminToken}`)
+			.end((_err, res) => {
+				res.should.have.status(403);
+				res.body.should.have.property('status').eql(403);
+				res.body.should.have.property('error').eql('Cannot delete an unflagged article');
+				done();
+			});
+	});
+
+	it('Admin cannot delete a non-existing article', (done) => {
+		chai.request(app)
+			.delete('/api/v1/articles/100')
+			.set('Authorization', `Bearer ${adminToken}`)
+			.end((_err, res) => {
+				res.should.have.status(404);
+				res.body.should.have.property('status').eql(404);
+				res.body.should.have.property('error').eql('Article not found');
+				done();
+			});
+	});
+});
+describe('Admin can delete a flagged article', () => {
+	it('create an article', (done) => {
+		chai.request(app)
+			.post('/api/v1/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.article2)
+			.end((_err, res) => {
+				articleId = res.body.data.id;
+				res.should.have.status(201);
+				res.body.should.have.property('status').eql(201);
+				done();
+			});
+	});
+	it('Employee cannot flag their own article', (done) => {
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.flag)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('You cannot flag your own article');
+				done();
+			});
+	});
+	it('flag an article', (done) => {
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
+			.send(mockData.flag)
+			.end((_err, _res) => {
+				done();
+			});
+	});
+	it('Admin can delete a flagged article', (done) => {
 		chai.request(app)
 			.delete(`/api/v1/articles/${articleId}`)
 			.set('Authorization', `Bearer ${adminToken}`)
@@ -672,11 +730,10 @@ describe('Comments', () => {
 				done();
 			});
 	});
-
 	it('Employee can flag a comment', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
-			.set('Authorization', `Bearer ${token}`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
 			.send(mockData.flag)
 			.end((_err, res) => {
 				res.should.have.status(201);
@@ -847,7 +904,7 @@ describe('Deleting flagged comments', () => {
 	beforeEach('Comment on an article', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments`)
-			.set('Authorization', `Bearer ${token}`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
 			.send(mockData.comment)
 			.end((_err, res) => {
 				commentId = res.body.data.comment.id;
@@ -857,7 +914,7 @@ describe('Deleting flagged comments', () => {
 	beforeEach('Flag a comment', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
-			.set('Authorization', `Bearer ${tokenTwo}`)
+			.set('Authorization', `Bearer ${token}`)
 			.send(mockData.flag)
 			.end((err, _res) => {
 				if (err) done(err);
@@ -867,7 +924,7 @@ describe('Deleting flagged comments', () => {
 	afterEach('delete a comment', (done) => {
 		chai.request(app)
 			.delete(`/api/v1/articles/${articleId}/comments/${commentId}`)
-			.set('Authorization', `Bearer ${token}`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
 			.end((_err, _res) => {
 				done();
 			});
@@ -884,7 +941,7 @@ describe('Deleting flagged comments', () => {
 	it('Employee cannot delete a comment even if it is flagged', (done) => {
 		chai.request(app)
 			.delete(`/api/v1/articles/${articleId}/comments/${commentId}`)
-			.set('Authorization', `Bearer ${tokenTwo}`)
+			.set('Authorization', `Bearer ${token}`)
 			.end((_err, res) => {
 				res.should.have.status(403);
 				res.body.should.have.property('status').eql(403);
@@ -892,6 +949,19 @@ describe('Deleting flagged comments', () => {
 				done();
 			});
 	});
+	it('Employee cannot flag their own comment', (done) => {
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
+			.send(mockData.flag)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('You cannot flag your own comment');
+				done();
+			});
+	})
+
 	it('Admin can delete a flagged comment', (done) => {
 		chai.request(app)
 			.delete(`/api/v1/articles/${articleId}/comments/${commentId}`)

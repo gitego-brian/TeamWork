@@ -1,10 +1,11 @@
+/* eslint-disable no-throw-literal */
 import jwt from 'jsonwebtoken';
 import { users } from '../data/data';
 
 class Helper {
 	getToken({
- id, email, firstName, lastName, isAdmin 
-}) {
+		id, email, firstName, lastName, isAdmin
+	}) {
 		const token = jwt.sign(
 			{
 				id,

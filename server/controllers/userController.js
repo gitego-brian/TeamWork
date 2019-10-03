@@ -1,3 +1,4 @@
+/* eslint-disable no-throw-literal */
 /* eslint-disable linebreak-style */
 /* eslint-disable class-methods-use-this */
 import bcrypt from 'bcrypt';
@@ -28,35 +29,22 @@ class UserController {
 			department,
 			address
 		});
-
-		if (error) {
-			if (error.details[0].type === 'string.pattern.base') {
-				if (
-					error.details[0].message.replace(/[/"]/g, '').split(' ')[0] === 'password') {
-					res.status(400).send({
-						status: 400,
-						error: 'password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters'
-					});
-				} else {
-					res.status(400).send({
-						status: 400,
-						error: `${error.details[0].message
-							.split('with')[0]
-							.replace(/[/"]/g, '')}is not valid`
-					});
-				}
-			} else if (error.details[0].type === 'any.only') {
-				res.status(400).send({
-					status: 400,
-					error: 'gender can be Male(M) or Female(F)'
-				});
-			} else {
-				res.status(400).send({
-					status: 400,
-					error: error.details[0].message.replace(/[/"]/g, '')
-				});
+		try {
+			if (error) {
+				if (error.details[0].type === 'string.pattern.base') {
+					if (error.details[0].message.replace(/[/"]/g, '').split(' ')[0] === 'password') throw 'password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters';
+					else throw `${error.details[0].message.split('with')[0].replace(/[/"]/g, '')}is not valid`;
+				} else if (error.details[0].type === 'any.only') throw 'gender can be Male(M) or Female(F)';
+				else throw error.details[0].message.replace(/[/"]/g, '');
 			}
-		} else if (users.find((el) => el.email === req.body.email)) {
+		} catch (err) {
+			res.status(400).send({
+				status: 400,
+				error: err
+			});
+			return;
+		}
+		if (users.find((el) => el.email === req.body.email)) {
 			res.status(409).send({
 				status: 409,
 				error: 'Email already exists'
@@ -152,7 +140,7 @@ class UserController {
 					isAdmin: user.isAdmin,
 				}
 
-			})
+			});
 		} else {
 			res.status(404).send({
 				status: 404,

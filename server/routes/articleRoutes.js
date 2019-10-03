@@ -8,6 +8,8 @@ const router = Router();
 
 router.get('/', Helper.verifyToken, ArticleController.getArticles);
 
+router.get('/flagged', Helper.verifyToken, ArticleController.getFlaggedArticles);
+
 router.post('/', Helper.verifyToken, ArticleController.newArticle);
 
 router.get('/:articleID', Helper.verifyToken, ArticleController.getSingleArticle);
