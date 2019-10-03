@@ -8,9 +8,15 @@ const exitSharePopupBtn = document.querySelector(
 const exitDeletePopupBtn = document.querySelector(
 	'.bg-popup> .delete> .close-popup'
 );
+const exitFlagPopupBtn = document.querySelector(
+	'.bg-popup> .flag> .close-popup'
+);
+const deleteBtn = document.querySelector('.delete-article-btn');
+const flagBtn = document.querySelector('.flag-article-btn');
 const shareBtn = document.querySelector('.share-article-btn');
 const bgPopup = document.querySelector('.bg-popup');
 const deletePopup = document.querySelector('.bg-popup> .delete');
+const flagPopup = document.querySelector('.bg-popup> .flag');
 const sharePopup = document.querySelector('.bg-popup> .share');
 const body = document.querySelector('.body');
 const displayPopup = () => {
@@ -23,12 +29,14 @@ const closePopup = () => {
 };
 
 shareBtn.addEventListener('click', () => {
+	flagPopup.style.display = 'none';
 	deletePopup.style.display = 'none';
 	sharePopup.style.display = 'block';
 	displayPopup();
 });
 exitSharePopupBtn.addEventListener('click', closePopup);
 exitDeletePopupBtn.addEventListener('click', closePopup);
+exitFlagPopupBtn.addEventListener('click', closePopup);
 
 /*
 ___________________________________________________________________
@@ -36,14 +44,18 @@ delete article popup
 ___________________________________________________________________
 */
 
-const deleteBtn = document.querySelector('.delete-article-btn');
-
 deleteBtn.addEventListener('click', () => {
 	sharePopup.style.display = 'none';
+	flagPopup.style.display = 'none';
 	deletePopup.style.display = 'block';
 	displayPopup();
 });
-
+flagBtn.addEventListener('click', () => {
+	sharePopup.style.display = 'none';
+	deletePopup.style.display = 'none';
+	flagPopup.style.display = 'block';
+	displayPopup();
+});
 /*
 _____________________________________________________________________
 editing an article
@@ -77,9 +89,9 @@ editArticle.addEventListener('click', () => {
 closeArticlePopupBtn.addEventListener('click', closeArticlePopup);
 
 /*
-______________________________________________________________________________________________________
+__________________________________________________________________
 comments
-______________________________________________________________________________________________________
+__________________________________________________________________
 */
 const nbrComments = document.querySelector('.nbr-comments> i');
 const commentBox = document.querySelector('.article-comment');
@@ -97,7 +109,8 @@ commentBox.addEventListener('keypress', (e) => {
 		if (key === 13) {
 			createListElement(commentBox.value);
 			nbrComments.textContent = `${parseInt(
-				nbrComments.textContent.split(' ')[0]
+				nbrComments.textContent.split(' ')[0],
+				10
 			) + 1} Comments`;
 			commentBox.value = '';
 		}
