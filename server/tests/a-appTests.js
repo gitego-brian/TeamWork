@@ -14,7 +14,7 @@ describe('App tests', () => {
 			.end((_err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('message').eql('Welcome to TeamWork!');
+				res.body.should.have.property('message').eql('Welcome to TeamWork!, go to https://documenter.getpostman.com/view/8741834/SVtPXARF?version=latest or go to the REPO at https://github.com/gitego-brian/TeamWork for documentation');
 				done();
 			});
 	});
