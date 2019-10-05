@@ -894,7 +894,7 @@ describe('Deleting flagged comments', () => {
 	beforeEach('create an article', (done) => {
 		chai.request(app)
 			.post('/api/v1/articles/')
-			.set('Authorization', `Bearer ${token}`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
 			.send(mockData.article4)
 			.end((_err, res) => {
 				articleId = res.body.data.id;
@@ -904,7 +904,7 @@ describe('Deleting flagged comments', () => {
 	beforeEach('Comment on an article', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments`)
-			.set('Authorization', `Bearer ${tokenTwo}`)
+			.set('Authorization', `Bearer ${token}`)
 			.send(mockData.comment)
 			.end((_err, res) => {
 				commentId = res.body.data.comment.id;
@@ -914,7 +914,7 @@ describe('Deleting flagged comments', () => {
 	beforeEach('Flag a comment', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
-			.set('Authorization', `Bearer ${token}`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
 			.send(mockData.flag)
 			.end((err, _res) => {
 				if (err) done(err);
@@ -924,7 +924,7 @@ describe('Deleting flagged comments', () => {
 	afterEach('delete a comment', (done) => {
 		chai.request(app)
 			.delete(`/api/v1/articles/${articleId}/comments/${commentId}`)
-			.set('Authorization', `Bearer ${tokenTwo}`)
+			.set('Authorization', `Bearer ${token}`)
 			.end((_err, _res) => {
 				done();
 			});
@@ -932,8 +932,9 @@ describe('Deleting flagged comments', () => {
 	afterEach('delete an article', (done) => {
 		chai.request(app)
 			.delete(`/api/v1/articles/${articleId}`)
-			.set('Authorization', `Bearer ${token}`)
-			.end((_err, _res) => {
+			.set('Authorization', `Bearer ${tokenTwo}`)
+			.end((err, _res) => {
+				if (err) done(err);
 				done();
 			});
 	});
@@ -952,7 +953,7 @@ describe('Deleting flagged comments', () => {
 	it('Employee cannot flag their own comment', (done) => {
 		chai.request(app)
 			.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
-			.set('Authorization', `Bearer ${tokenTwo}`)
+			.set('Authorization', `Bearer ${token}`)
 			.send(mockData.flag)
 			.end((_err, res) => {
 				res.should.have.status(400);
@@ -960,16 +961,68 @@ describe('Deleting flagged comments', () => {
 				res.body.should.have.property('error').eql('You cannot flag your own comment');
 				done();
 			});
-	})
+	});
 
-	it('Admin can delete a flagged comment', (done) => {
+});
+
+describe('Viewing flagged articles', () => {
+	it('Admin cannot view flagged articles when none are flagged', (done) => {
 		chai.request(app)
-			.delete(`/api/v1/articles/${articleId}/comments/${commentId}`)
+			.get('/api/v1/articles/flagged')
+			.set('Authorization', `Bearer ${adminToken}`)
+			.end((_err, res) => {
+				res.should.have.status(404);
+				res.should.have.property('body');
+				res.body.should.have.property('status').eql(404);
+				res.body.should.have.property('message').eql('No flagged articles');
+				done();
+			});
+	});
+	it('create an article', (done) => {
+		chai.request(app)
+			.post('/api/v1/articles')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.article4)
+			.end((err, res) => {
+				articleId = res.body.data.id;
+				if (err) done(err);
+				done();
+			});
+	});
+	it('flag an article', (done) => {
+		chai.request(app)
+			.post(`/api/v1/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
+			.send(mockData.flag)
+			.end((err, _res) => {
+				if (err) done(err);
+				done();
+			});
+	});
+	it('Admin can view all flagged articles', (done) => {
+		chai.request(app)
+			.get('/api/v1/articles/flagged')
 			.set('Authorization', `Bearer ${adminToken}`)
 			.end((_err, res) => {
 				res.should.have.status(200);
+				res.should.have.property('body');
 				res.body.should.have.property('status').eql(200);
-				res.body.should.have.property('message').eql('Comment successfully deleted');
+				res.body.should.have.property('message').eql('Flagged articles');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('flaggedArticles');
+
+				done();
+			});
+	});
+	it('Non-admin cannot view flagged articles', (done) => {
+		chai.request(app)
+			.get('/api/v1/articles/flagged')
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, res) => {
+				res.should.have.status(403);
+				res.should.have.property('body');
+				res.body.should.have.property('status').eql(403);
+				res.body.should.have.property('error').eql('Not Authorized');
 				done();
 			});
 	});

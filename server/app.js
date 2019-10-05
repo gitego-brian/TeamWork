@@ -22,7 +22,7 @@ app.get('/', (_req, res) => {
 	res.status(200).send({
 		status: 200,
 		message:
-      'Welcome to TeamWork!, go to https://documenter.getpostman.com/view/8741834/SVtPXARF?version=latest or go to the REPO at https://github.com/gitego-brian/TeamWork for documentation'
+      'Welcome to TeamWork!, go to  https://documenter.getpostman.com/view/8741834/SVtPXARF?version=latest  or go to the REPO at https://github.com/gitego-brian/TeamWork for documentation'
 	});
 });
 app.use('/api/v1/auth', userRoutes);
