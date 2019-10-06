@@ -79,7 +79,7 @@ editArticle.addEventListener('click', () => {
 	displayArticlePopup();
 	document.querySelector(
 		'textarea.article-text-edit'
-	).value = document.querySelector('.article-content> p').textContent;
+	).textContent = document.querySelector('.article-content> p').textContent;
 	document.querySelector(
 		'input.article-title-edit'
 	).value = document.querySelector(
