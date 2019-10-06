@@ -1,9 +1,4 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-}
-/*HOMEPAGE***************/
+
 * {
     padding: 0;
     margin: 0;
@@ -151,7 +146,7 @@ body {
 a {
     text-decoration: none;
 
-    cursor: default
+    cursor: pointer
 }
 
 a:focus {
@@ -181,7 +176,7 @@ a:active {
 }
 
 .index-down-section .content .details {
-    font-size: 1.5em;
+    font-size: 1rem;
     text-align: center;
     padding: 15px;
 }
@@ -207,7 +202,7 @@ a:active {
 
 .index-down-section .top {
     padding: 1vw;
-    font-size: 2vw
+    font-size: 1rem;
 }
 
 .whole-body {
@@ -289,9 +284,11 @@ input::placeholder {
 }
 
 input[type=radio] {
-    display: inline-block;
+    display: inline;
     width: fit-content;
-
+}
+input[value=female]{
+    margin-left: 30px
 }
 
 .psw {
@@ -301,6 +298,7 @@ input[type=radio] {
 
 .bcm {
     float: left;
+    color: rgb(122, 134, 167);
 }
 
 .bottom a {
@@ -415,6 +413,7 @@ img[alt=user] {
 }
 .pagination li a{
     text-decoration: none;
+    color: black;
 }
 .pagination li {
     display: block;
@@ -546,14 +545,26 @@ p.article-text {
     margin-left: 5px
 }
 
-.share-article-btn,
-.view-article-btn {
-    float: right
+
+.delete-article-btn {
+    float: right;
+    background-color: #a81212;
+}
+.delete-article-btn:hover {
+    background-color: rgb(150, 168, 252);
+    color: #a81212;
+
+}
+.bg-popup > .delete > [button] {
+    background-color: #a81212;
+}
+.bg-popup > .delete > [button]:hover {
+    background-color: rgb(150, 168, 252);
+    color: #a81212;
 }
 .share-article-btn{
     margin-right: 5px;
 }
-
 .article-options-panel:after {
     content: "";
     display: block;
@@ -597,7 +608,7 @@ p.article-text {
 .about-page .heading .subtitle,
 .contact-page .heading .title,
 .contact-page .heading .subtitle {
-    font-size: 2.5em;
+    font-size: 2.5rem;
     color:whitesmoke;
     letter-spacing: 10px;
 }
@@ -617,7 +628,7 @@ p.article-text {
     text-align: center;
     letter-spacing: 2px;
     font-weight: 100;
-    font-size: 1.2em;
+    font-size: 1rem;
     width: 80%;
     margin: auto
 }
@@ -626,6 +637,7 @@ p.article-text {
 .about-down-section .about-me {
     background-color: #2c2537;
     color: rgba(240, 248, 255, 0.877);
+    border-radius: 10px;
     padding: 15px;
 }
 
@@ -893,6 +905,7 @@ textarea {
     resize: none;
     font-size: 1em;
     margin: auto;
+    margin-top: 1rem;
 }
 
 .view-a-popup span {
