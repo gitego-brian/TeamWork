@@ -8,7 +8,9 @@
     "start": "node --require babel-core/register --require babel-polyfill ./server/app.js",
     "dev-start": "nodemon --require babel-core/register --require babel-polyfill ./server/app.js",
     "lint": "eslint server",
-    "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "database": "node --require babel-core/register --require babel-polyfill ./server/v2/database/dbConfig.js createTables",
+    "deleteTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/delTables.js deleteTables"
   },
   "repository": {
     "type": "git",
@@ -40,6 +42,7 @@
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
     "morgan": "^1.9.1",
+    "pg": "^7.12.1",
     "uuid": "^3.3.3"
   },
   "devDependencies": {
