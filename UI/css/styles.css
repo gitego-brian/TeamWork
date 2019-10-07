@@ -556,14 +556,18 @@ p.article-text {
     color: #a81212;
 
 }
+.bg-popup > .delete,
+.bg-popup > .share {
+    width: 20%;
+}
 .bg-popup > .delete > div,
 .bg-popup > .share > div{
     font-size: 1.2rem;
 }
-.bg-popup > .delete > [button] {
+.bg-popup > .delete > center> [button] {
     background-color: #a81212;
 }
-.bg-popup > .delete > [button]:hover {
+.bg-popup > .delete > center > [button]:hover {
     background-color: rgb(150, 168, 252);
     color: #a81212;
 }
