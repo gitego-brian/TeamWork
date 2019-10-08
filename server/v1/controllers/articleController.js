@@ -194,8 +194,8 @@ class ArticleController {
 			if (article) {
 				const respond = Helper.flagger(req.payload, article, reason);
 				const {
- error, status, message, flag 
-} = respond;
+					error, status, message, flag
+				} = respond;
 				if (error) {
 					res.status(status).send({
 						status,
@@ -318,8 +318,8 @@ class ArticleController {
 				if (comment) {
 					const response = Helper.flagger(req.payload, comment, reason);
 					const {
- error, status, message, flag 
-} = response;
+						error, status, message, flag
+					} = response;
 					if (error) {
 						res.status(status).send({
 							status,
@@ -362,8 +362,7 @@ class ArticleController {
 					article,
 					'comment'
 				);
-				console.log(response);
-				
+
 				if (response.status === 200) {
 					res.status(response.status).send({
 						status: response.status,
