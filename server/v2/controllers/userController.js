@@ -53,6 +53,8 @@ class UserController {
 						}
 					});
 				} else {
+					console.log(match.rows[0]);
+
 					res.status(200).send({
 						status: 200,
 						message: 'User is successfully logged in',

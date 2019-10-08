@@ -48,7 +48,7 @@ class Helper {
 				});
 			}
 			const { email } = req.payload;
-			const match = await pool.query('SELECT * FROM users WHERE email LIKE $1', email);
+			const match = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 			if (!match.rows[0]) {
 				res.status(401).send({
 					status: 401,
