@@ -1,17 +1,9 @@
-services:
-  - postgresql
-addons:
-  postgresql: "12"
+sudo: false
 language: node_js
 node_js:
   - 10.16.2
 install:
   - npm install
-before_script:
-  - psql -c "CREATE DATABASE tw_testing;" -U postgres
-cache:
-  directories:
-    - node_modules
 script:
   - npm test
 after_success:
