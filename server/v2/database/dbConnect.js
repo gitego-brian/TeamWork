@@ -13,12 +13,5 @@ const config = {
 };
 
 const pool = new Pool(config);
-pool.query(createTables, (error, res) => {
-	if (error) {
-		console.log(`error: ${error}`);
-	} else {
-		console.log('connected to database');
-	}
-});
 pool.connect();
 export default pool;

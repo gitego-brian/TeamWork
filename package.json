@@ -4,13 +4,13 @@
   "description": "An internal social network for organizations’ employees.",
   "main": "app.js",
   "scripts": {
-    "test": "nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 5000 --exit",
+    "deleteTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/delTables.js",
+    "test": "nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 5000 --exit && npm run deleteTables",
     "start": "node --require babel-core/register --require babel-polyfill ./server/app.js",
     "dev-start": "nodemon --require babel-core/register --require babel-polyfill ./server/app.js",
     "lint": "eslint server",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "database": "node --require babel-core/register --require babel-polyfill ./server/v2/database/dbConfig.js createTables",
-    "deleteTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/delTables.js deleteTables"
+    "database": "node --require babel-core/register --require babel-polyfill ./server/v2/database/dbConfig.js createTables"
   },
   "repository": {
     "type": "git",

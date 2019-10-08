@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import userRoutes1 from './v1/routes/userRoutes';
 import articleRoutes1 from './v1/routes/articleRoutes';
+import userRoutes2 from './v2/routes/userRoutes';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -29,6 +30,9 @@ app.get('/', (_req, res) => {
 // VERSION ONE
 app.use('/api/v1/auth', userRoutes1);
 app.use('/api/v1/articles', articleRoutes1);
+
+// VERSION TWO
+app.use('/api/v2/auth', userRoutes2);
 
 
 // Error handling

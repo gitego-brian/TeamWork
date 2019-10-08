@@ -14,6 +14,9 @@ const config = {
 
 const pool = new Pool(config);
 pool.query(createTables, (_error, _res) => {
+	if (_error) {
+		console.error(_error);
+	}
 	pool.end();
 });
 pool.connect();
