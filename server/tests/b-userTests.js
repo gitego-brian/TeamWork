@@ -503,29 +503,5 @@ describe('Version Two', () => {
 					done();
 				});
 		});
-
-		it('it should not login an employee with wrong password', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signin')
-				.send(mockData.loginWrongPwd)
-				.end((err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Password incorrect');
-					done();
-				});
-		});
-
-		it('it should not login an employee who does not have account', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signin')
-				.send(mockData.loginNoAccount)
-				.end((_err, res) => {
-					res.should.have.status(404);
-					res.body.should.have.property('status').eql(404);
-					res.body.should.have.property('error').eql('User not found');
-					done();
-				});
-		});
 	});
 });
