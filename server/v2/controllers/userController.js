@@ -8,10 +8,10 @@ class UserController {
         } = req.body;
 
         const hash = Helper.hashPassword(password);
-        const q = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *';
+        const query = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *';
         const values = [firstName, lastName, email, hash, gender, jobRole, department, address];
         try {
-            const result = await pool.query(q, values);
+            const result = await pool.query(query, values);
             res.status(201).send({
                 status: 201,
                 message: 'User Account successfully created',

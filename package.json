@@ -5,12 +5,12 @@
   "main": "app.js",
   "scripts": {
     "deleteTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/delTables.js",
-    "test": "nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 5000 --exit && npm run deleteTables",
+    "test": "SET NODE_ENV=testing nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 5000 --exit && SET NODE_ENV=testing npm run deleteTables",
     "start": "node --require babel-core/register --require babel-polyfill ./server/app.js",
     "dev-start": "nodemon --require babel-core/register --require babel-polyfill ./server/app.js",
     "lint": "eslint server",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "database": "node --require babel-core/register --require babel-polyfill ./server/v2/database/dbConfig.js createTables"
+    "database": "node --require babel-core/register --require babel-polyfill ./server/v2/database/createTables.js"
   },
   "repository": {
     "type": "git",
