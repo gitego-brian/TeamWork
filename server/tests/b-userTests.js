@@ -475,19 +475,6 @@ describe('Version Two', () => {
 		});
 	});
 	describe('Employee Login test', () => {
-		it('it should login an employee', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signin')
-				.send(mockData.loginComplete)
-				.end((_err, res) => {
-					token = res.body.data.token;
-					res.should.have.status(200);
-					res.body.should.have.property('status').eql(200);
-					res.body.should.have.property('data');
-					res.body.data.should.have.property('token');
-					done();
-				});
-		});
 		it('it should not login an employee with no email', (done) => {
 			const data = {
 				password: mockData.loginComplete.password
