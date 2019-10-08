@@ -8,8 +8,8 @@ node_js:
 install:
   - npm install
 before_script:
-  - psql -c 'CREATE DATABASE teamworkdb;' -U postgres
   - psql -c "CREATE DATABASE tw_testing;" -U postgres
+cache:   
 script:
   - npm test
 after_success:
