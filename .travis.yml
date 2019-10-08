@@ -1,9 +1,25 @@
 sudo: false
+services:
+  - postgresql
+addons:
+  postgresql: "12"
+env:
+  global:
+    - PORT=3000
+    - PG_USER = gbrian
+    - PG_HOST = localhost
+    - PG_DB = teamworkdb
+    - PG_TEST_DB = tw_testing
+    - PG_PASSWORD = Sangwa@1998
+    - PG_PORT = 5432
 language: node_js
 node_js:
   - 10.16.2
 install:
   - npm install
+before_script:
+- psql -c 'create database teamworkdb;' -U gbrian
 script:
   - npm test
-after_success: npm run coverage
+after_success:
+  - npm run coverage
