@@ -34,6 +34,46 @@ class UserController {
 			}
 		}
 	}
+
+	async signIn(req, res) {
+		const q = `
+        SELECT * FROM users WHERE email = $1
+        `;
+		let match;
+		try { match = await pool.query(q, [req.body.email]); } catch (err) { res.tatus(500).send({ status: 500, error: 'Internal server error' }); }
+		if (match.rows[0]) {
+			const checked = Helper.checkPassword(match.rows[0].password, req.body.password);
+			if (checked) {
+				if (match.rows[0].isadmin === true) {
+					res.status(200).send({
+						status: 200,
+						message: 'Admin is successfully logged in',
+						data: {
+							token: Helper.getToken(match.rows[0])
+						}
+					});
+				} else {
+					res.status(200).send({
+						status: 200,
+						message: 'User is successfully logged in',
+						data: {
+							token: Helper.getToken(match.rows[0])
+						}
+					});
+				}
+			} else {
+				res.status(401).send({
+					status: 401,
+					error: 'Password incorrect'
+				});
+			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'User not found'
+			});
+		}
+	}
 }
 
 export default new UserController();

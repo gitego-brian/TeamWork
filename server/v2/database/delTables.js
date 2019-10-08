@@ -4,14 +4,8 @@ import pool from './dbConnect';
 
 dotenv.config();
 
-const delTables = () => {
-	pool.query(deleteTables, (error, res) => {
-		if (error) {
-			console.log(`error: ${error}`);
-		} else {
-			console.log('deleted');
-		}
-	});
+const delTables = async () => {
+	await pool.query(deleteTables).then((res) => console.log(res)).catch((err) => console.log(err));
 };
 
 delTables();

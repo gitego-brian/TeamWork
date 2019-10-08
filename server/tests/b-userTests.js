@@ -2,6 +2,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../app';
 import mockData from './mockData';
+import pool from '../v2/database/dbConnect';
+import Helper from '../v2/helpers/helper';
 
 chai.use(chaiHttp);
 chai.should();
@@ -470,6 +472,85 @@ describe('Version Two', () => {
 					res.should.have.status(400);
 					res.body.should.have.property('status').eql(400);
 					res.body.should.have.property('error').eql('gender can be Male(M) or Female(F)');
+					done();
+				});
+		});
+	});
+	describe('Employee Login test', () => {
+		const {
+			firstName, lastName, email, password, gender, jobRole, department, address
+		} = mockData.signupComplete2;
+		beforeEach('create a user', (done) => {
+			pool.query(`INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address)
+			 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, [firstName, lastName, email, Helper.hashPassword(password), gender, jobRole, department, address])
+				.then((_res) => { done(); }).catch((err) => console.log(err));
+		});
+		afterEach('delete a user', (done) => {
+			pool.query('DELETE FROM users WHERE email = $1', [email]).then((_res) => { done(); })
+				.catch((err) => console.log(err));
+		});
+		it('it should login an employee', (done) => {
+			chai.request(app)
+				.post('/api/v2/auth/signin')
+				.send(mockData.loginComplete)
+				.end((_err, res) => {
+					token = res.body.data.token;
+					res.should.have.status(200);
+					res.body.should.have.property('status').eql(200);
+					res.body.should.have.property('data');
+					res.body.data.should.have.property('token');
+					done();
+				});
+		});
+		it('it should not login an employee with no email', (done) => {
+			const data = {
+				password: mockData.loginComplete.password
+			};
+			chai.request(app)
+				.post('/api/v2/auth/signin')
+				.send(data)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('email is required');
+					done();
+				});
+		});
+		it('it should not login an employee with no password', (done) => {
+			const data = {
+				email: mockData.loginComplete.email
+			};
+			chai.request(app)
+				.post('/api/v2/auth/signin')
+				.send(data)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('password is required');
+					done();
+				});
+		});
+
+		it('it should not login an employee with wrong password', (done) => {
+			chai.request(app)
+				.post('/api/v2/auth/signin')
+				.send(mockData.loginWrongPwd)
+				.end((err, res) => {
+					res.should.have.status(401);
+					res.body.should.have.property('status').eql(401);
+					res.body.should.have.property('error').eql('Password incorrect');
+					done();
+				});
+		});
+
+		it('it should not login an employee who does not have account', (done) => {
+			chai.request(app)
+				.post('/api/v2/auth/signin')
+				.send(mockData.loginNoAccount)
+				.end((_err, res) => {
+					res.should.have.status(404);
+					res.body.should.have.property('status').eql(404);
+					res.body.should.have.property('error').eql('User not found');
 					done();
 				});
 		});

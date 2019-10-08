@@ -14,7 +14,7 @@ class Validate {
 					res.status(400).send({
 						status: 400,
 						error:
-                            'password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters'
+							'password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters'
 					});
 				} else {
 					res.status(400).send({
@@ -33,6 +33,20 @@ class Validate {
 					error: error.details[0].message.replace(/[/"]/g, '')
 				});
 			}
+		} else next();
+	}
+
+	validateLogin(req, res, next) {
+		const { email, password } = req.body;
+		const { error } = schema.loginSchema.validate({
+			email,
+			password
+		});
+		if (error && error.details[0].type === 'any.required') {
+			res.status(400).send({
+				status: 400,
+				error: error.details[0].message.replace(/[/"]/g, '')
+			});
 		} else next();
 	}
 }
