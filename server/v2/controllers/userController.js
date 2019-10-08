@@ -40,7 +40,7 @@ class UserController {
         SELECT * FROM users WHERE email = $1
         `;
 		let match;
-		try { match = await pool.query(q, [req.body.email]); } catch (err) { res.tatus(500).send({ status: 500, error: 'Internal server error' }); }
+		try { match = await pool.query(q, [req.body.email]); } catch (err) { res.status(500).send({ status: 500, error: 'Internal server error' }); }
 		if (match.rows[0]) {
 			const checked = Helper.checkPassword(match.rows[0].password, req.body.password);
 			if (checked) {
