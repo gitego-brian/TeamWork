@@ -13,5 +13,5 @@ const config = {
 };
 
 const pool = new Pool(config);
-pool.connect();
+pool.connect(() => console.log('connected...'));
 export default pool;
