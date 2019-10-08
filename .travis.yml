@@ -9,7 +9,9 @@ install:
   - npm install
 before_script:
   - psql -c "CREATE DATABASE tw_testing;" -U postgres
-cache:   
+cache:
+  directories:
+    - node_modules
 script:
   - npm test
 after_success:

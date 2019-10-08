@@ -6,7 +6,7 @@
   "scripts": {
     "createTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/createTables.js",
     "deleteTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/delTables.js",
-    "test": "cross-env NODE_ENV=testing npm run createTables && cross-env NODE_ENV=testing nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 10000 --exit && cross-env NODE_ENV=testing npm run deleteTables",
+    "test": "nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 10000 --exit",
     "start": "node --require babel-core/register --require babel-polyfill ./server/app.js",
     "dev-start": "nodemon --require babel-core/register --require babel-polyfill ./server/app.js",
     "lint": "eslint server",

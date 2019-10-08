@@ -475,19 +475,6 @@ describe('Version Two', () => {
 		});
 	});
 	describe('Employee Login test', () => {
-		it('it should sign up an employee', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signup')
-				.send(mockData.signupComplete2)
-				.end((_err, res) => {
-					res.should.have.status(201);
-					res.body.should.have.property('status').eql(201);
-					res.body.should.have.property('message').eql('User Account successfully created');
-					res.body.should.have.property('data');
-					res.body.data.should.have.property('token');
-					done();
-				});
-		});
 		it('it should login an employee', (done) => {
 			chai.request(app)
 				.post('/api/v2/auth/signin')
