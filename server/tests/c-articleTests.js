@@ -1028,3 +1028,47 @@ describe('Version one', () => {
 		});
 	});
 });
+describe('Version two', () => {
+	it('first sign up an employee', (done) => {
+		chai.request(app)
+			.post('/api/v2/auth/signup')
+			.send(mockData.baraka)
+			.end((_err, res) => {
+				token = res.body.data.token;
+				done();
+			});
+	});
+
+	it('first sign up another employee', (done) => {
+		chai.request(app)
+			.post('/api/v2/auth/signup')
+			.send(mockData.james)
+			.end((_err, res) => {
+				tokenTwo = res.body.data.token;
+				done();
+			});
+	});
+	it('Employee should view all articles', (done) => {
+		chai.request(app)
+			.get('/api/v2/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, res) => {
+				res.should.have.status(200);
+				res.body.should.have.property('status').eql(200);
+				res.body.should.have.property('message').eql('All articles');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('articles');
+				done();
+			});
+	});
+	it('Employee should not be able to view all articles if he/she is not signed up', (done) => {
+		chai.request(app)
+			.get('/api/v2/articles/')
+			.end((_err, res) => {
+				res.should.have.status(401);
+				res.body.should.have.property('status').eql(401);
+				res.body.should.have.property('error').eql('Please log in or sign up first');
+				done();
+			});
+	});
+});

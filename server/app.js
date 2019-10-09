@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import userRoutes1 from './v1/routes/userRoutes';
 import articleRoutes1 from './v1/routes/articleRoutes';
+import articleRoutes2 from './v2/routes/articleRoutes';
+
 import userRoutes2 from './v2/routes/userRoutes';
 
 const app = express();
@@ -33,7 +35,7 @@ app.use('/api/v1/articles', articleRoutes1);
 
 // VERSION TWO
 app.use('/api/v2/auth', userRoutes2);
-
+app.use('/api/v2/articles', articleRoutes2);
 
 // Error handling
 app.use('/*', (_req, res) => {

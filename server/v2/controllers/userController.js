@@ -16,7 +16,7 @@ class UserController {
 				status: 201,
 				message: 'User Account successfully created',
 				data: {
-					token: Helper.getToken(result),
+					token: Helper.getToken(result.rows[0]),
 				}
 			});
 		} catch (err) {
@@ -26,10 +26,9 @@ class UserController {
 					error: 'Email already exists'
 				});
 			} else {
-				console.log(err);
 				res.status(500).send({
 					status: 500,
-					error: 'Oops,server down'
+					error: err.message
 				});
 			}
 		}
@@ -53,8 +52,6 @@ class UserController {
 						}
 					});
 				} else {
-					console.log(match.rows[0]);
-
 					res.status(200).send({
 						status: 200,
 						message: 'User is successfully logged in',
