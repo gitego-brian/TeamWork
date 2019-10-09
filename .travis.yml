@@ -1,10 +1,19 @@
-sudo: false
+ after_success: 
+  - "npm run coverage"
+cache: 
+  directories: 
+    - node_modules
 language: node_js
-node_js:
-  - 10.16.2
+node_js: 
+  - stable
 install:
-  - npm install
-script:
-  - npm test
-after_success:
-  - npm run coverage
+- npm install
+services:
+- postgresql
+before_script:
+- psql -c 'CREATE DATABASE teamworkdb;' -U postgres
+notifications: 
+  email: false
+script: 
+  - "npm run test"
+sudo: false
