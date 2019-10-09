@@ -4,13 +4,13 @@
   "description": "An internal social network for organizations’ employees.",
   "main": "app.js",
   "scripts": {
+    "createTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/createTables.js",
     "deleteTables": "node --require babel-core/register --require babel-polyfill ./server/v2/database/delTables.js",
-    "test": "nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 5000 --exit",
+    "test": "nyc --reporter=html --reporter=text mocha --require babel-core/register --require babel-polyfill ./server/tests/*.js --timeout 10000 --exit",
     "start": "node --require babel-core/register --require babel-polyfill ./server/app.js",
     "dev-start": "nodemon --require babel-core/register --require babel-polyfill ./server/app.js",
     "lint": "eslint server",
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "database": "node --require babel-core/register --require babel-polyfill ./server/v2/database/createTables.js"
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -50,6 +50,7 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "coveralls": "^3.0.6",
+    "cross-env": "^6.0.3",
     "eslint": "^6.4.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",

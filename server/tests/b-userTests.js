@@ -474,4 +474,34 @@ describe('Version Two', () => {
 				});
 		});
 	});
+	describe('Employee Login test', () => {
+		it('it should not login an employee with no email', (done) => {
+			const data = {
+				password: mockData.loginComplete.password
+			};
+			chai.request(app)
+				.post('/api/v2/auth/signin')
+				.send(data)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('email is required');
+					done();
+				});
+		});
+		it('it should not login an employee with no password', (done) => {
+			const data = {
+				email: mockData.loginComplete.email
+			};
+			chai.request(app)
+				.post('/api/v2/auth/signin')
+				.send(data)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('password is required');
+					done();
+				});
+		});
+	});
 });

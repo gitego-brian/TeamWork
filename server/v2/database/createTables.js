@@ -1,13 +1,13 @@
 import createTables from './dbQueries';
 import pool from './dbConnect';
 
-pool.query(createTables, (_error, _res) => {
-	if (_error) {
-		console.error(_error);
+const makeTables = async () => {
+	try {
+		await pool.query(createTables);
+		process.exit(0);
+	} catch (e) {
+		console.log(e);
 	}
-	console.table(_res.rows);
-	pool.end();
-});
-pool.connect();
+};
 
-export default pool;
+makeTables();
