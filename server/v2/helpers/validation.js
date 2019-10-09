@@ -1,4 +1,5 @@
 import schema from './joiValidation';
+import pool from '../database/dbConnect';
 
 class Validate {
 	async validateSignup(req, res, next) {
@@ -48,6 +49,39 @@ class Validate {
 				error: error.details[0].message.replace(/[/"]/g, '')
 			});
 		} else next();
+	}
+
+	async validateArticle(req, res, next) {
+		const { title, article } = req.body;
+		const { error } = schema.articleSchema.validate({
+			title,
+			article
+		});
+		try {
+			if (error) throw error.details[0].message.replace(/[/"]/g, '');
+		} catch (err) {
+			res.status(400).send({
+				status: 400,
+				error: err
+			});
+			return;
+		}
+		const query = 'SELECT * FROM articles WHERE title = $1';
+		const values = [title];
+		try {
+			const result = await pool.query(query, values);
+			if (result.rows[0]) {
+				res.status(409).send({
+					status: 409,
+					error: 'Article already exists'
+				});
+			} else next();
+		} catch (err) {
+			res.status(500).send({
+				status: 500,
+				error: 'Internal server error'
+			});
+		}
 	}
 }
 
