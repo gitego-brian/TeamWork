@@ -75,7 +75,7 @@ class ArticleController {
 		} catch (err) {
 			return res.status(500).send({
 				status: 500,
-				error: 'Internal server error'
+				error: err.message
 			});
 		}
 	}
