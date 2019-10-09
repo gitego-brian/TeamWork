@@ -1071,4 +1071,88 @@ describe('Version two', () => {
 				done();
 			});
 	});
+
+	it('Employee should create an article', (done) => {
+		chai.request(app)
+			.post('/api/v2/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.article)
+			.end((_err, res) => {
+				res.should.have.status(201);
+				res.body.should.have.property('status').eql(201);
+				res.body.should.have.property('message').eql('Article successfully created');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('id');
+				res.body.data.should.have.property('title').eql('Just a sign');
+				res.body.data.should.have.property('article').eql('Looking at the world through my rearview, searching for an answer up high, or is it all wasted time?');
+				res.body.data.should.have.property('authorId');
+				res.body.data.should.have.property('authorName');
+				done();
+			});
+	});
+
+	it('Employee should not create an article if not signed up', (done) => {
+		chai.request(app)
+			.post('/api/v2/articles/')
+			.send(mockData.article)
+			.end((_err, res) => {
+				res.should.have.status(401);
+				res.body.should.have.property('status').eql(401);
+				res.body.should.have.property('error').eql('Please log in or sign up first');
+				done();
+			});
+	});
+
+	it('Employee should not create an article with an invalid token', (done) => {
+		chai.request(app)
+			.post('/api/v2/articles/')
+			.set('Authorization', 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLTMwMGViODQwIiwiZW1haWwiOiJrYWxpc2FAZ21haWwuY29tIiwiZmlyc3ROYW1lIjoiQ2hyaXN0aWFuIiwibGFzdE5hbWUiOiJLYWxpc2EiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNTY5MzI4MjY5fQ.Rzbk2yB0hM-vUV5OokmiIHT7IrTIPDuFXE3VYekDeo0')
+			.send(mockData.article)
+			.end((_err, res) => {
+				res.should.have.status(401);
+				res.body.should.have.property('status').eql(401);
+				res.body.should.have.property('error').eql('Invalid token');
+				done();
+			});
+	});
+
+	it('Employee should not create an article if title is too short', (done) => {
+		chai.request(app)
+			.post('/api/v2/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.shortTitle)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('title length must be at least 5 characters long');
+
+				done();
+			});
+	});
+
+	it('Employee should not create an article if article is too short', (done) => {
+		chai.request(app)
+			.post('/api/v2/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.shortArticle)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('article length must be at least 20 characters long');
+
+				done();
+			});
+	});
+	it('Employee should not create an article if article already exists', (done) => {
+		chai.request(app)
+			.post('/api/v2/articles/')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.article)
+			.end((_err, res) => {
+				res.should.have.status(409);
+				res.body.should.have.property('status').eql(409);
+				res.body.should.have.property('error').eql('Article already exists');
+				done();
+			});
+	});
 });
