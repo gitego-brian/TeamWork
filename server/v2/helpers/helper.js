@@ -15,7 +15,7 @@ class Helper {
 	}
 
 	getToken({
-		id, email, firstName, lastName, isAdmin
+		id, email, firstname: firstName, lastname: lastName, isadmin: isAdmin
 	}) {
 		const token = jwt.sign(
 			{
@@ -48,14 +48,19 @@ class Helper {
 				});
 			}
 			const { email } = req.payload;
-			const match = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-			if (!match.rows[0]) {
-				res.status(401).send({
-					status: 401,
-					error: 'Invalid token'
+			try {
+				const match = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+				if (!match.rows[0]) {
+					res.status(401).send({
+						status: 401,
+						error: 'Invalid token'
+					});
+				} else next();
+			} catch (err) {
+				res.status(500).send({
+					status: 500,
+					error: 'Internal server error'
 				});
-			} else {
-				next();
 			}
 		}
 	}
