@@ -1202,11 +1202,6 @@ describe('Version two', () => {
 					.send(mockData.article2)
 					.end((_err, res) => {
 						articleId = res.body.data.id;
-<<<<<<< HEAD
-						res.should.have.status(201);
-						res.body.should.have.property('status').eql(201);
-=======
->>>>>>> feature(Commenting): Commenting on an article
 						done();
 					});
 			});
@@ -1234,7 +1229,7 @@ describe('Version two', () => {
 						done();
 					});
 			});
-	
+
 			it('user cannot edit an article if not logged in or signed up', (done) => {
 				chai.request(app)
 					.patch(`/api/v2/articles/${articleId}`)
@@ -1246,7 +1241,7 @@ describe('Version two', () => {
 						done();
 					});
 			});
-	
+
 			it('Employee cannot edit a non existing article', (done) => {
 				chai.request(app)
 					.patch('/api/v2/articles/14400')
@@ -1259,7 +1254,7 @@ describe('Version two', () => {
 						done();
 					});
 			});
-	
+
 			it('Employee cannot edit an article if no article or title is provided', (done) => {
 				chai.request(app)
 					.patch(`/api/v2/articles/${articleId}`)
