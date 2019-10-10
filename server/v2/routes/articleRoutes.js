@@ -10,6 +10,7 @@ router.post('/', Helper.verifyToken, Validation.validateArticle, ArticleControll
 router.get('/:articleID', Helper.verifyToken, ArticleController.getSingleArticle);
 router.patch('/:articleID', Helper.verifyToken, Validation.validateUpdate, ArticleController.updateArticle);
 router.delete('/:articleID', Helper.verifyToken, ArticleController.deleteArticle);
+router.post('/:articleID/flags', Helper.verifyToken, Validation.validateArticleFlag, ArticleController.flagArticle);
 router.post('/:articleID/comments', Helper.verifyToken, Validation.validateComment, ArticleController.postComment);
 router.post('/:articleID/comments/:commentID/', Helper.verifyToken, Validation.validateCommentFlag, ArticleController.flagComment);
 
