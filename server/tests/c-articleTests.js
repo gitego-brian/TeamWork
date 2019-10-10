@@ -1078,6 +1078,7 @@ describe('Version two', () => {
 			.set('Authorization', `Bearer ${token}`)
 			.send(mockData.article)
 			.end((_err, res) => {
+				articleId = res.body.data.id;
 				res.should.have.status(201);
 				res.body.should.have.property('status').eql(201);
 				res.body.should.have.property('message').eql('Article successfully created');
@@ -1152,6 +1153,42 @@ describe('Version two', () => {
 				res.should.have.status(409);
 				res.body.should.have.property('status').eql(409);
 				res.body.should.have.property('error').eql('Article already exists');
+				done();
+			});
+	});
+
+	it('Employee should be able to view a single article', (done) => {
+		chai.request(app)
+			.get(`/api/v2/articles/${articleId}`)
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, res) => {
+				res.should.have.status(200);
+				res.body.should.have.property('status').eql(200);
+				res.body.should.have.property('message').eql('Success');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('Article');
+				done();
+			});
+	});
+	it('Employee should not be able to view a single article if he/she is not signed up', (done) => {
+		chai.request(app)
+			.get(`/api/v2/articles/${articleId}`)
+			.end((_err, res) => {
+				res.should.have.status(401);
+				res.body.should.have.property('status').eql(401);
+				res.body.should.have.property('error').eql('Please log in or sign up first');
+				done();
+			});
+	});
+
+	it('Employee should not be able to view a non-existing article', (done) => {
+		chai.request(app)
+			.get('/api/v2/articles/1000')
+			.set('Authorization', `Bearer ${token}`)
+			.end((_err, res) => {
+				res.should.have.status(404);
+				res.body.should.have.property('status').eql(404);
+				res.body.should.have.property('error').eql('Article not found');
 				done();
 			});
 	});

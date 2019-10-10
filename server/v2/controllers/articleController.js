@@ -1,5 +1,6 @@
 /* eslint-disable no-throw-literal */
 import pool from '../database/dbConnect';
+import Helper from '../helpers/helper';
 
 class ArticleController {
 	async getArticles(_req, res) {
@@ -45,9 +46,44 @@ class ArticleController {
 				}
 			});
 		} catch (err) {
+			res.status(500).send({ status: 500, error: 'Internal server error' });
+		}
+	}
+
+	async getSingleArticle(req, res) {
+		const query = `
+        SELECT * FROM articles
+        WHERE id = $1`;
+		const values = [req.params.articleID];
+		try {
+			const result = await pool.query(query, values);
+			if (result.rows[0]) {
+				const comments = await Helper.findComments(req.params.articleID);
+				const {
+					id, authorid: authorId, authorname: authorName, title, article, createdon: createdOn
+				} = result.rows[0];
+				return res.status(200).send({
+					status: 200,
+					message: 'Success',
+					data: {
+						Article: {
+							id, authorId, authorName, title, article, createdOn
+						},
+						Comments: comments
+					}
+				});
+			}
+			return res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
+		} catch (err) {
 			console.log(err);
 
-			res.status(500).send({ status: 500, error: 'Internal server error' });
+			return res.status(500).send({
+				status: 500,
+				error: err.message
+			});
 		}
 	}
 }

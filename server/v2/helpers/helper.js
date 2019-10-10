@@ -64,6 +64,22 @@ class Helper {
 			}
 		}
 	}
+
+	async findComments(_req, res, id) {
+		const query = `
+			SELECT * FROM comments
+			WHERE articleid = $1`;
+		const values = [id];
+		try {
+			const result = await pool.query(query, values);
+			return result.rows;
+		} catch (err) {
+			return res.status(500).send({
+				status: 500,
+				error: 'Internal server error'
+			});
+		}
+	}
 }
 
 export default new Helper();

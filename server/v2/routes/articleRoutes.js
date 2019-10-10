@@ -7,5 +7,6 @@ const router = Router();
 
 router.get('/', Helper.verifyToken, ArticleController.getArticles);
 router.post('/', Helper.verifyToken, Validation.validateArticle, ArticleController.newArticle);
+router.get('/:articleID', Helper.verifyToken, ArticleController.getSingleArticle);
 
 export default router;
