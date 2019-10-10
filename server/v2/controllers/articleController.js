@@ -139,6 +139,58 @@ class ArticleController {
 		} else return res.status(404).send({ status: 404, error: 'Article not found' });
 	}
 
+	async flagArticle(req, res) {
+		const { reason } = req.body;
+		const { articleID } = req.params;
+		const { id } = req.payload;
+		const article = await Helper.findOne(articleID, 'articles');
+		if (article) {
+			if (article.authorid === id) {
+				return res.status(400).send({
+					status: 400,
+					error: 'You cannot flag your own article'
+				});
+			}
+			const query = `INSERT INTO articleFlags (authorid, articleid, reason) 
+				VALUES ($1, $2, $3) RETURNING *;
+				`;
+			const values = [id, articleID, reason];
+			try {
+				const result = await pool.query(query, values);
+				const {
+					id, authorid: authorId, articleid: articleId, reason, flaggedon: flaggedOn
+				} = result.rows[0];
+				return res.status(201).send({
+					status: 201,
+					message: 'Article flagged!',
+					data: {
+						flag: {
+							id, authorId, articleId, reason, flaggedOn
+						},
+						article: {
+							id: article.id,
+							title: article.title,
+							article: article.article,
+							authorId: article.authorid,
+							authorName: article.authorname
+
+						}
+					}
+				});
+			} catch (err) {
+				return res.status(500).send({
+					status: 500,
+					error: err.message
+				});
+			}
+		} else {
+			return res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
+		}
+	}
+
 	async postComment(req, res) {
 		const { comment } = req.body;
 		const authorId = req.payload.id;
@@ -188,6 +240,12 @@ class ArticleController {
 		const comment = await Helper.findOne(commentID, 'comments');
 		if (article) {
 			if (comment) {
+				if (comment.authorid === id) {
+					return res.status(400).send({
+						status: 400,
+						error: 'You cannot flag your own comment'
+					});
+				}
 				const query = `INSERT INTO commentflags (authorid, commentid, reason) 
 				VALUES ($1, $2, $3) RETURNING *;
 				`;

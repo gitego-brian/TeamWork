@@ -1180,7 +1180,92 @@ describe('Version two', () => {
 				done();
 			});
 	});
+	it('Employee can flag an article', (done) => {
+		chai.request(app)
+			.post(`/api/v2/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${tokenTwo}`)
+			.send(mockData.flag)
+			.end((_err, res) => {
+				res.should.have.status(201);
+				res.body.should.have.property('status').eql(201);
+				res.body.should.have.property('message').eql('Article flagged!');
+				res.body.should.have.property('data');
+				res.body.data.should.have.property('article');
+				res.body.data.should.have.property('flag');
+				res.body.data.flag.should.have.property('id');
+				res.body.data.flag.should.have.property('reason').eql('inappropriate');
+				res.body.data.flag.should.have.property('flaggedOn');
+				done();
+			});
+	});
 
+	it('Employee cannot flag an article if not logged in or signed up', (done) => {
+		chai.request(app)
+			.post(`/api/v2/articles/${articleId}/flags`)
+			.send(mockData.flag)
+			.end((_err, res) => {
+				res.should.have.status(401);
+				res.body.should.have.property('status').eql(401);
+				res.body.should.have.property('error').eql('Please log in or sign up first');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an article if the reason is too short', (done) => {
+		chai.request(app)
+			.post(`/api/v2/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.shortFlag)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('That reason may not be understandable, Care to elaborate?');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an non-existing article', (done) => {
+		chai.request(app)
+			.post('/api/v2/articles/100/flags')
+			.set('Authorization', `Bearer ${token}`)
+			.send(mockData.flag)
+			.end((_err, res) => {
+				res.should.have.status(404);
+				res.body.should.have.property('status').eql(404);
+				res.body.should.have.property('error').eql('Article not found');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an article with empty reason', (done) => {
+		const data = {
+			reason: ''
+		};
+		chai.request(app)
+			.post(`/api/v2/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('Can\'t flag article, no reason provided');
+				done();
+			});
+	});
+
+	it('Employee cannot flag an article with no reason', (done) => {
+		const data = {};
+		chai.request(app)
+			.post(`/api/v2/articles/${articleId}/flags`)
+			.set('Authorization', `Bearer ${token}`)
+			.send(data)
+			.end((_err, res) => {
+				res.should.have.status(400);
+				res.body.should.have.property('status').eql(400);
+				res.body.should.have.property('error').eql('Can\'t flag article, no reason provided');
+				done();
+			});
+	});
 
 	describe('Altering articles', () => {
 		describe('Employee can change his articles', () => {
