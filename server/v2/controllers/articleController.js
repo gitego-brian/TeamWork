@@ -31,7 +31,7 @@ class ArticleController {
 		const authorName = `${firstName} ${lastName}`;
 		const query = `
         INSERT INTO articles (authorid, authorname, title, article)
-        VALUES ($1,$2, $3, $4) RETURNING *;
+        VALUES ($1, $2, $3, $4) RETURNING *;
         `;
 		const values = [authorId, authorName, title, article];
 		try {
@@ -120,80 +120,92 @@ class ArticleController {
 	async deleteArticle(req, res) {
 		const { articleID } = req.params;
 		const article = await Helper.findOne(articleID, 'articles');
-		const { id, isAdmin } = req.payload.id;
+		const { id } = req.payload;
 		if (article) {
-			const flags = await Helper.findFlags(articleID, 'article', res);
-			if (flags || id === article.authorId) {
+			if (id === article.authorid) {
 				const query = `
 			DELETE FROM articles WHERE id = $1;
 			`;
 				const values = [articleID];
 				try {
 					const result = await pool.query(query, values);
-
 					return res.status(200).send({ status: 200, message: 'Article successfully deleted' });
 				} catch (err) {
 					res.status(500).send({ status: 500, error: err.message });
 				}
 			} else {
-				try {
-					if ((flags.length < 1) && isAdmin) throw 'Cannot delete an unflagged commment';
-					else throw 'Not Authorized';
-				} catch (err) {
-					return res.status(403).send({ status: 403, error: err.message });
-				}
+				return res.status(403).send({ status: 403, error: 'Not Authorized' });
 			}
 		} else return res.status(404).send({ status: 404, error: 'Article not found' });
 	}
 
 	async postComment(req, res) {
 		const { comment } = req.body;
-		const { error } = schema.commentSchema.validate({
-			comment
-		});
-		try {
-			if (error) {
-				if (error.details[0].type === 'any.required') {
-					throw "You didn't write anything";
-				} else throw error.details[0].message.replace(/[/"]/g, '');
-			}
-		} catch (err) {
-			return res.status(400).send({
-				status: 400,
-				error: err
-			});
-		}
 		const authorId = req.payload.id;
 		const article = await Helper.findOne(req.params.articleID, 'articles');
 		if (article) {
-			const matches = await Helper.findComments(req, res, req.params.articleID);
-			const match = matches.find((el) => el.comment === comment);
-			if (match) {
-				res.status(409).send({
-					status: 409,
-					error: 'Comment already exists'
-				});
-			} else {
-				const query = `
+			const query = `
 				INSERT INTO comments (authorid, articleid, comment) VALUES ($1, $2, $3) RETURNING *;
 				`;
-				const values = [authorId, req.params.articleID, comment];
+			const values = [authorId, req.params.articleID, comment];
+			try {
+				const result = await pool.query(query, values);
+				const {
+					id, authorid: authorId, articleid: articleId, comment, postedon: postedOn
+				} = result.rows[0];
+				return res.status(201).send({
+					status: 201,
+					message: 'Comment posted successfully',
+					data: {
+						articleTitle: article.title,
+						article: article.article,
+						comment: {
+							id, authorId, articleId, comment, postedOn
+						}
+					}
+
+				});
+			} catch (err) {
+				return res.status(500).send({
+					status: 500,
+					error: err.message
+				});
+			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'Article not found'
+			});
+		}
+	}
+
+
+	async flagComment(req, res) {
+		const { reason } = req.body;
+		const { articleID, commentID } = req.params;
+		const { id } = req.payload;
+		const article = await Helper.findOne(articleID, 'articles');
+		const comment = await Helper.findOne(commentID, 'comments');
+		if (article) {
+			if (comment) {
+				const query = `INSERT INTO commentflags (authorid, commentid, reason) 
+				VALUES ($1, $2, $3) RETURNING *;
+				`;
+				const values = [id, commentID, reason];
 				try {
 					const result = await pool.query(query, values);
 					const {
-						id, authorid: authorId, articleid: articleId, comment, postedon: postedOn
+						id, authorid: authorId, commentid: commentId, reason, flaggedon: flaggedOn
 					} = result.rows[0];
 					return res.status(201).send({
 						status: 201,
-						message: 'Comment posted successfully',
+						message: 'Comment flagged!',
 						data: {
-							articleTitle: article.title,
-							article: article.article,
-							comment: {
-								id, authorId, articleId, comment, postedOn
-							}
+							flag: {
+								id, authorId, commentId, reason, flaggedOn
+							},
+							comment
 						}
-
 					});
 				} catch (err) {
 					return res.status(500).send({
@@ -201,9 +213,14 @@ class ArticleController {
 						error: err.message
 					});
 				}
+			} else {
+				return res.status(404).send({
+					status: 404,
+					error: 'Comment not found'
+				});
 			}
 		} else {
-			res.status(404).send({
+			return res.status(404).send({
 				status: 404,
 				error: 'Article not found'
 			});

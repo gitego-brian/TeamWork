@@ -1144,18 +1144,6 @@ describe('Version two', () => {
 				done();
 			});
 	});
-	it('Employee should not create an article if article already exists', (done) => {
-		chai.request(app)
-			.post('/api/v2/articles/')
-			.set('Authorization', `Bearer ${token}`)
-			.send(mockData.article)
-			.end((_err, res) => {
-				res.should.have.status(409);
-				res.body.should.have.property('status').eql(409);
-				res.body.should.have.property('error').eql('Article already exists');
-				done();
-			});
-	});
 
 	it('Employee should be able to view a single article', (done) => {
 		chai.request(app)
@@ -1192,6 +1180,7 @@ describe('Version two', () => {
 				done();
 			});
 	});
+
 
 	describe('Altering articles', () => {
 		describe('Employee can change his articles', () => {
@@ -1284,6 +1273,52 @@ describe('Version two', () => {
 				});
 		});
 
+		it('Employee can delete an article', (done) => {
+			chai.request(app)
+				.delete(`/api/v2/articles/${articleId}`)
+				.set('Authorization', `Bearer ${token}`)
+				.end((_err, res) => {
+					res.should.have.status(200);
+					res.body.should.have.property('status').eql(200);
+					res.body.should.have.property('message').eql('Article successfully deleted');
+					done();
+				});
+		});
+		it('create an article', (done) => {
+			chai.request(app)
+				.post('/api/v2/articles/')
+				.set('Authorization', `Bearer ${token}`)
+				.send(mockData.article2)
+				.end((_err, res) => {
+					articleId = res.body.data.id;
+					res.should.have.status(201);
+					res.body.should.have.property('status').eql(201);
+					done();
+				});
+		});
+
+		it('Employee cannot delete an article if not logged in or signed up', (done) => {
+			chai.request(app)
+				.delete(`/api/v2/articles/${articleId}`)
+				.end((_err, res) => {
+					res.should.have.status(401);
+					res.body.should.have.property('status').eql(401);
+					res.body.should.have.property('error').eql('Please log in or sign up first');
+					done();
+				});
+		});
+
+		it('Employee cannot delete a non-existent article', (done) => {
+			chai.request(app)
+				.delete('/api/v2/articles/100')
+				.set('Authorization', `Bearer ${token}`)
+				.end((_err, res) => {
+					res.should.have.status(404);
+					res.body.should.have.property('status').eql(404);
+					res.body.should.have.property('error').eql('Article not found');
+					done();
+				});
+		});
 		it('Employee can comment on an article', (done) => {
 			chai.request(app)
 				.post(`/api/v2/articles/${articleId}/comments`)
@@ -1300,17 +1335,72 @@ describe('Version two', () => {
 					done();
 				});
 		});
-		it('Employee cannot comment post the same comment on an article two consecutive times', (done) => {
+		it('Employee cannot comment on a non-existent article', (done) => {
 			chai.request(app)
-				.post(`/api/v2/articles/${articleId}/comments`)
+				.post('/api/v2/articles/100/comments')
 				.set('Authorization', `Bearer ${token}`)
 				.send(mockData.comment)
 				.end((_err, res) => {
-					res.should.have.status(409);
-					res.should.have.property('body');
-					res.body.should.be.a('object');
-					res.body.should.have.property('status').eql(409);
-					res.body.should.have.property('error').eql('Comment already exists');
+					res.should.have.status(404);
+					res.body.should.have.property('status').eql(404);
+					res.body.should.have.property('error').eql('Article not found');
+					done();
+				});
+		});
+
+		it('Employee cannot comment an article if not logged in', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments`)
+				.send(mockData.comment)
+				.end((_err, res) => {
+					res.should.have.status(401);
+					res.body.should.have.property('status').eql(401);
+					res.body.should.have.property('error').eql('Please log in or sign up first');
+					done();
+				});
+		});
+
+		it('Employee cannot comment on an article if no comment is provided', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments`)
+				.set('Authorization', `Bearer ${token}`)
+				.send({})
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('You didn\'t write anything');
+					done();
+				});
+		});
+
+		it('Employee cannot comment on an article if the comment is only spaces', (done) => {
+			const data = {
+				comment: '  '
+			};
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments`)
+				.set('Authorization', `Bearer ${token}`)
+				.send(data)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('comment is not allowed to be empty');
+					done();
+				});
+		});
+
+		it('Employee cannot comment on an article if the comment is an empty string', (done) => {
+			const data = {
+				comment: ''
+			};
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments`)
+				.set('Authorization', `Bearer ${token}`)
+				.send(data)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('comment is not allowed to be empty');
 					done();
 				});
 		});
@@ -1321,6 +1411,145 @@ describe('Version two', () => {
 				.end((_err, res) => {
 					res.should.have.status(200);
 					res.body.should.have.property('status').eql(200);
+					done();
+				});
+		});
+	});
+
+	describe('Comments', () => {
+		beforeEach('create an article', (done) => {
+			chai.request(app)
+				.post('/api/v2/articles/')
+				.set('Authorization', `Bearer ${token}`)
+				.send(mockData.article3)
+				.end((_err, res) => {
+					articleId = res.body.data.id;
+					done();
+				});
+		});
+
+		beforeEach('Comment on an article', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments`)
+				.set('Authorization', `Bearer ${token}`)
+				.send(mockData.comment2)
+				.end((_err, res) => {
+					commentId = res.body.data.comment.id;
+					done();
+				});
+		});
+		afterEach('Delete a comment', (done) => {
+			chai.request(app)
+				.delete(`/api/v2/articles/${articleId}/comments/${commentId}`)
+				.set('Authorization', `Bearer ${token}`)
+				.end((_err, _res) => {
+					done();
+				});
+		});
+
+		afterEach('delete an article', (done) => {
+			chai.request(app)
+				.delete(`/api/v2/articles/${articleId}`)
+				.set('Authorization', `Bearer ${token}`)
+				.end((_err, _res) => {
+					done();
+				});
+		});
+		it('Employee can flag a comment', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
+				.set('Authorization', `Bearer ${tokenTwo}`)
+				.send(mockData.flag)
+				.end((_err, res) => {
+					res.should.have.status(201);
+					res.body.should.have.property('status').eql(201);
+					res.body.should.have.property('message').eql('Comment flagged!');
+					res.body.should.have.property('data');
+					res.body.data.should.have.property('comment');
+					res.body.data.should.have.property('flag');
+					res.body.data.flag.should.have.property('id');
+					res.body.data.flag.should.have.property('reason').eql('inappropriate');
+					res.body.data.flag.should.have.property('flaggedOn');
+					done();
+				});
+		});
+
+		it('Employee cannot flag a comment if not logged in or signed up', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
+				.send(mockData.flag)
+				.end((_err, res) => {
+					res.should.have.status(401);
+					res.body.should.have.property('status').eql(401);
+					res.body.should.have.property('error').eql('Please log in or sign up first');
+					done();
+				});
+		});
+
+		it('Employee cannot flag a comment if the reason is too short', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
+				.set('Authorization', `Bearer ${token}`)
+				.send(mockData.shortFlag)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('That reason may not be understandable, Care to elaborate?');
+					done();
+				});
+		});
+
+		it('Employee cannot flag an non-existing comment', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments/100`)
+				.set('Authorization', `Bearer ${token}`)
+				.send(mockData.flag)
+				.end((_err, res) => {
+					res.should.have.status(404);
+					res.body.should.have.property('status').eql(404);
+					res.body.should.have.property('error').eql('Comment not found');
+					done();
+				});
+		});
+
+		it('Employee cannot flag a comment if the article doesn\'t exist', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/100/comments/${commentId}`)
+				.set('Authorization', `Bearer ${token}`)
+				.send(mockData.flag)
+				.end((_err, res) => {
+					res.should.have.status(404);
+					res.body.should.have.property('status').eql(404);
+					res.body.should.have.property('error').eql('Article not found');
+					done();
+				});
+		});
+
+		it('Employee cannot flag a comment with empty reason', (done) => {
+			const data = {
+				reason: ''
+			};
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
+				.set('Authorization', `Bearer ${token}`)
+				.send(data)
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('Can\'t flag comment, no reason provided');
+					done();
+				});
+		});
+
+		it('Employee cannot flag a comment with no reason', (done) => {
+			chai.request(app)
+				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
+				.set('Authorization', `Bearer ${token}`)
+				.send({})
+				.end((_err, res) => {
+					res.should.have.status(400);
+					res.body.should.have.property('status').eql(400);
+					res.body.should.have.property('error').eql('Can\'t flag comment, no reason provided');
 					done();
 				});
 		});

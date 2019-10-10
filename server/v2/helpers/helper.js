@@ -30,6 +30,17 @@ class Helper {
 		return token;
 	}
 
+	async flagger({ id }, elt, reason) {
+		if (id === elt.authorid) {
+			return { status: 400, error: 'You cannot flag your own' };
+		}
+		const match = await this.findFlags();
+		const query = ' INSERT INTO commentFlags ($1, $2, $3)';
+		elt.flags.push(flag);
+
+		return { status: 201, message: 'flagged!', flag };
+	}
+
 	async verifyToken(req, res, next) {
 		if (!req.headers.authorization) {
 			res.status(401).send({
@@ -104,7 +115,7 @@ class Helper {
 		const values = [id];
 		try {
 			const result = await pool.query(query, values);
-			return result.rows;
+			return result.rows[0];
 		} catch (err) { return err; }
 	}
 }

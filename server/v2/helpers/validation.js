@@ -72,12 +72,7 @@ class Validate {
 		const values = [title];
 		try {
 			const result = await pool.query(query, values);
-			if (result.rows[0]) {
-				res.status(409).send({
-					status: 409,
-					error: 'Article already exists'
-				});
-			} else next();
+			next();
 		} catch (err) {
 			res.status(500).send({
 				status: 500,
@@ -123,6 +118,71 @@ class Validate {
 			return res.status(404).send({
 				status: 404,
 				error: 'Article not found'
+			});
+		}
+	}
+
+	validateCommentFlag(req, res, next) {
+		const { reason } = req.body;
+		const { error } = schema.flagSchema.validate({
+			reason
+		});
+		try {
+			if (!reason) throw 'Can\'t flag comment, no reason provided';
+			if (error) {
+				if (error.details[0].type === 'string.min') {
+					throw 'That reason may not be understandable, Care to elaborate?';
+				}
+				if (error.details[0].type === 'any.required') {
+					throw 'Can\'t flag comment, no reason provided';
+				}
+			} next();
+		} catch (err) {
+			return res.status(400).send({
+				status: 400,
+				error: err
+			});
+		}
+	}
+
+	validateArticleFlag(req, res, next) {
+		const { reason } = req.body;
+		const { error } = schema.flagSchema.validate({
+			reason
+		});
+		try {
+			if (!reason) throw 'Can\'t flag article, no reason provided';
+			if (error) {
+				if (error.details[0].type === 'string.min') {
+					throw 'That reason may not be understandable, Care to elaborate?';
+				}
+				if (error.details[0].type === 'any.required') {
+					throw 'Can\'t flag article, no reason provided';
+				}
+			} next();
+		} catch (err) {
+			return res.status(400).send({
+				status: 400,
+				error: err
+			});
+		}
+	}
+
+	async validateComment(req, res, next) {
+		const { comment } = req.body;
+		const { error } = schema.commentSchema.validate({
+			comment
+		});
+		try {
+			if (error) {
+				if (error.details[0].type === 'any.required') {
+					throw "You didn't write anything";
+				} else throw error.details[0].message.replace(/[/"]/g, '');
+			} else next();
+		} catch (err) {
+			return res.status(400).send({
+				status: 400,
+				error: err
 			});
 		}
 	}
