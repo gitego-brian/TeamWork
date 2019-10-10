@@ -80,6 +80,33 @@ class Helper {
 			});
 		}
 	}
+
+	async findOne(what, where) {
+		const query = `
+        SELECT * FROM ${where}
+        WHERE id = $1`;
+		const values = [what];
+		try {
+			const result = await pool.query(query, values);
+			if (result.rows[0]) {
+				return result.rows[0];
+			}
+			return 0;
+		} catch (err) {
+			return err.message;
+		}
+	}
+
+	async findFlags(which, id, _res) {
+		const query = `
+			SELECT * FROM ${which}Flags
+			WHERE ${which}id = $1`;
+		const values = [id];
+		try {
+			const result = await pool.query(query, values);
+			return result.rows;
+		} catch (err) { console.log('error'); }
+	}
 }
 
 export default new Helper();
