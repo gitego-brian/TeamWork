@@ -354,6 +354,19 @@ describe('Version one', () => {
 
 describe('Version Two', () => {
 	describe('Employee signup test: case 1', () => {
+		it('it should sign up an employee', (done) => {
+			chai.request(app)
+				.post('/api/v2/auth/signup')
+				.send(mockData.signupComplete1)
+				.end((_err, res) => {
+					res.should.have.status(201);
+					res.body.should.have.property('status').eql(201);
+					res.body.should.have.property('message').eql('User Account successfully created');
+					res.body.should.have.property('data');
+					res.body.data.should.have.property('token');
+					done();
+				});
+		});
 		it('it should not create an employee account with incomplete info', (done) => {
 			chai.request(app)
 				.post('/api/v2/auth/signup')
@@ -475,6 +488,7 @@ describe('Version Two', () => {
 		});
 	});
 	describe('Employee Login test', () => {
+
 		it('it should not login an employee with no email', (done) => {
 			const data = {
 				password: mockData.loginComplete.password
