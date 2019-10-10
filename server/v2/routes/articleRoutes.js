@@ -10,6 +10,7 @@ router.post('/', Helper.verifyToken, Validation.validateArticle, ArticleControll
 router.get('/:articleID', Helper.verifyToken, ArticleController.getSingleArticle);
 router.patch('/:articleID', Helper.verifyToken, Validation.validateUpdate, ArticleController.updateArticle);
 router.delete('/:articleID', Helper.verifyToken, ArticleController.deleteArticle);
+router.post('/:articleID/comments', Helper.verifyToken, ArticleController.postComment);
 
 
 export default router;

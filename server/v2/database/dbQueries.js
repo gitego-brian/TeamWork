@@ -24,7 +24,7 @@ const articleFlags = `
 CREATE TABLE IF NOT EXISTS articleFlags (
     id SERIAL PRIMARY KEY UNIQUE,
     authorId INTEGER NOT NULL REFERENCES users (id),
-    articleId INTEGER NOT NULL REFERENCES articles (id),
+    articleId INTEGER NOT NULL REFERENCES articles (id) ON DELETE CASCADE,
     reason TEXT NOT NULL,
     flaggedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`;
@@ -32,7 +32,7 @@ const comments = `
 CREATE TABLE IF NOT EXISTS comments (
     id SERIAL PRIMARY KEY UNIQUE,
     authorId INTEGER,
-    articleId INTEGER NOT NULL REFERENCES articles (id),
+    articleId INTEGER NOT NULL REFERENCES articles (id) ON DELETE CASCADE,
     comment TEXT NOT NULL,
     postedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
@@ -40,7 +40,7 @@ const commentFlags = `
 CREATE TABLE IF NOT EXISTS commentFlags (
     id SERIAL PRIMARY KEY UNIQUE,
     authorId INTEGER,
-    commentId INTEGER NOT NULL REFERENCES comments (id),
+    commentId INTEGER NOT NULL REFERENCES comments (id) ON DELETE CASCADE,
     reason TEXT NOT NULL,
     flaggedOn TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )`;
