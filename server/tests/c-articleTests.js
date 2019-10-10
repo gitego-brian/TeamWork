@@ -1223,9 +1223,9 @@ describe('Version two', () => {
 						res.body.should.have.property('status').eql(200);
 						res.body.should.have.property('message').eql('Article successfully edited');
 						res.body.should.have.property('data');
-						res.body.data.should.have.property('Article');
-						res.body.data.Article.should.have.property('title').eql('This sign has just been edited');
-						res.body.data.Article.should.have.property('article').eql('Looking at the world through my rearview, searching for an answer up high, or is it all wasted time?');
+						res.body.data.should.have.property('article');
+						res.body.data.article.should.have.property('title').eql('This sign has just been edited');
+						res.body.data.article.should.have.property('article').eql('Looking at the world through my rearview, searching for an answer up high, or is it all wasted time?');
 						done();
 					});
 			});

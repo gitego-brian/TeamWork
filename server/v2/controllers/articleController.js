@@ -104,7 +104,7 @@ class ArticleController {
 				status: 200,
 				message: 'Article successfully edited',
 				data: {
-					Article: {
+					article: {
 						id, authorId, authorName, title, article, createdOn
 					}
 				}
