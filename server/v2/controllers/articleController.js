@@ -59,11 +59,16 @@ class ArticleController {
 			const result = await pool.query(query, values);
 			if (result.rows[0]) {
 				const comments = await Helper.findComments(req.params.articleID);
+				const {
+					id, authorid: authorId, authorname: authorName, title, article, createdon: createdOn
+				} = result.rows[0];
 				return res.status(200).send({
 					status: 200,
 					message: 'Success',
 					data: {
-						Article: result.rows[0],
+						Article: {
+							id, authorId, authorName, title, article, createdOn
+						},
 						Comments: comments
 					}
 				});

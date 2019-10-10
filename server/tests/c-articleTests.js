@@ -1158,14 +1158,14 @@ describe('Version two', () => {
 
 	it('Employee should be able to view a single article', (done) => {
 		chai.request(app)
-			.get(`/api/v1/articles/${articleId}`)
+			.get(`/api/v2/articles/${articleId}`)
 			.set('Authorization', `Bearer ${token}`)
 			.end((_err, res) => {
 				res.should.have.status(200);
 				res.body.should.have.property('status').eql(200);
 				res.body.should.have.property('message').eql('Success');
 				res.body.should.have.property('data');
-				res.body.data.should.have.property('article');
+				res.body.data.should.have.property('Article');
 				done();
 			});
 	});
