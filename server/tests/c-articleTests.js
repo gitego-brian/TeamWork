@@ -1078,6 +1078,7 @@ describe('Version two', () => {
 			.set('Authorization', `Bearer ${token}`)
 			.send(mockData.article)
 			.end((_err, res) => {
+				articleId = res.body.data.id;
 				res.should.have.status(201);
 				res.body.should.have.property('status').eql(201);
 				res.body.should.have.property('message').eql('Article successfully created');
@@ -1171,7 +1172,7 @@ describe('Version two', () => {
 	});
 	it('Employee should not be able to view a single article if he/she is not signed up', (done) => {
 		chai.request(app)
-			.get(`/api/v1/articles/${articleId}`)
+			.get(`/api/v2/articles/${articleId}`)
 			.end((_err, res) => {
 				res.should.have.status(401);
 				res.body.should.have.property('status').eql(401);
@@ -1182,7 +1183,7 @@ describe('Version two', () => {
 
 	it('Employee should not be able to view a non-existing article', (done) => {
 		chai.request(app)
-			.get('/api/v1/articles/100')
+			.get('/api/v2/articles/1000')
 			.set('Authorization', `Bearer ${token}`)
 			.end((_err, res) => {
 				res.should.have.status(404);

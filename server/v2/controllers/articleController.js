@@ -78,6 +78,8 @@ class ArticleController {
 				error: 'Article not found'
 			});
 		} catch (err) {
+			console.log(err);
+
 			return res.status(500).send({
 				status: 500,
 				error: err.message
