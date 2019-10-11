@@ -36,7 +36,7 @@ class UserController {
 
 	async signIn(req, res) {
 		const q = `
-        SELECT * FROM users WHERE email = $1
+        SELECT * FROM users WHERE email = $1;
         `;
 		let match;
 		try { match = await pool.query(q, [req.body.email]); } catch (err) { res.status(500).send({ status: 500, error: 'Internal server error' }); }
@@ -64,6 +64,36 @@ class UserController {
 				res.status(401).send({
 					status: 401,
 					error: 'Password incorrect'
+				});
+			}
+		} else {
+			res.status(404).send({
+				status: 404,
+				error: 'User not found'
+			});
+		}
+	}
+
+	async makeAdmin(req, res) {
+		const user = await Helper.findOne(req.body.email, 'users');
+		if (user) {
+			const query = `
+			UPDATE users SET isadmin = $1 WHERE email = $2 RETURNING *;
+			`;
+			const values = [req.body.isAdmin, req.body.email];
+			try {
+				const result = await pool.query(query, values);
+				res.status(201).send({
+					status: 201,
+					message: 'Admin toggled',
+					data: {
+						isAdmin: result.rows[0].isadmin,
+					}
+				});
+			} catch (err) {
+				res.status(500).send({
+					status: 500,
+					error: err.message
 				});
 			}
 		} else {

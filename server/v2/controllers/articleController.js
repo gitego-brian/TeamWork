@@ -1,7 +1,6 @@
 /* eslint-disable no-throw-literal */
 import pool from '../database/dbConnect';
 import Helper from '../helpers/helper';
-import schema from '../helpers/joiValidation';
 
 class ArticleController {
 	async getArticles(_req, res) {
@@ -59,7 +58,7 @@ class ArticleController {
 		try {
 			const result = await pool.query(query, values);
 			if (result.rows[0]) {
-				const comments = await Helper.findComments(req.params.articleID);
+				const comments = await Helper.findComments(res, req.params.articleID);
 				const {
 					id, authorid: authorId, authorname: authorName, title, article, createdon: createdOn
 				} = result.rows[0];
@@ -120,9 +119,10 @@ class ArticleController {
 	async deleteArticle(req, res) {
 		const { articleID } = req.params;
 		const article = await Helper.findOne(articleID, 'articles');
-		const { id } = req.payload;
+		const flags = Helper.findArticleFlags(articleID);
+		const { id, isAdmin } = req.payload;
 		if (article) {
-			if (id === article.authorid) {
+			if ((isAdmin && flags[0]) || id === article.authorid) {
 				const query = `
 			DELETE FROM articles WHERE id = $1;
 			`;
@@ -283,6 +283,35 @@ class ArticleController {
 				error: 'Article not found'
 			});
 		}
+	}
+
+	async deleteComment(req, res) {
+		const { articleID, commentID } = req.params;
+		const { id, isAdmin } = req.payload;
+		const article = await Helper.findOne(articleID, 'articles');
+		const comment = await Helper.findOne(articleID, 'comments');
+		const flagQuery = `
+		SELECT * FROM articleflags WHERE articleid = $1;`;
+		const flagValues = [articleID];
+		const flagResult = await pool.query(flagQuery, flagValues);
+		if (article) {
+			if (comment) {
+				if ((isAdmin && flagResult.rows[0]) || id === comment.authorid) {
+					const query = `
+				DELETE FROM comments WHERE id = $1;
+				`;
+					const values = [commentID];
+					try {
+						const result = await pool.query(query, values);
+						return res.status(200).send({ status: 200, message: 'Comment successfully deleted' });
+					} catch (err) {
+						res.status(500).send({ status: 500, error: err.message });
+					}
+				} else {
+					return res.status(403).send({ status: 403, error: 'Not Authorized' });
+				}
+			} else return res.status(404).send({ status: 404, error: 'Comment not found' });
+		} else return res.status(404).send({ status: 404, error: 'Article not found' });
 	}
 }
 

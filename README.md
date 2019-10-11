@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/gitego-brian/TeamWork.svg?branch=develop)](https://travis-ci.org/gitego-brian/TeamWork) [![Coverage Status](https://coveralls.io/repos/github/gitego-brian/TeamWork/badge.svg?branch=develop)](https://coveralls.io/github/gitego-brian/TeamWork?branch=develop) [![Maintainability](https://api.codeclimate.com/v1/badges/babdaf2abddbdd8d9723/maintainability)](https://codeclimate.com/github/gitego-brian/TeamWork/maintainability)
 
-[Documentation](https://documenter.getpostman.com/view/8741834/SVtPXARF?version=latest#de7dbd0a-5fdb-4284-9d22-31a55cfa6a24)
+> ## Documentation
+- [Version one](https://documenter.getpostman.com/view/8741834/SVtPXARF?version=latest#de7dbd0a-5fdb-4284-9d22-31a55cfa6a24)
+- [Version two](https://documenter.getpostman.com/view/8741834/SVtVTTQj?version=latest)
 
 ## What is it?
 
@@ -115,8 +117,6 @@ Below is a list of API Endpoints you will find:
 - **PATCH/api/v1/articles/:articleID** : Editing an article
 
 - **DELETE/api/v1/articles/:articleID** : Deleting an article
-
-- **POST/api/v1/articles/:articleID** : Sharing an article
 
 - **POST/api/v1/articles/:articleID/comments** : Commenting on an article
 
