@@ -1,5 +1,3 @@
-/* eslint-disable no-useless-escape */
-/* eslint-disable no-throw-literal */
 import pool from '../database/dbConnect';
 import Helper from '../helpers/helper';
 

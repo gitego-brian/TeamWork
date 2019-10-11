@@ -1,4 +1,3 @@
-/* eslint-disable no-throw-literal */
 import Moment from 'moment';
 import Article from '../models/articleModel';
 import Comment from '../models/commentModel';

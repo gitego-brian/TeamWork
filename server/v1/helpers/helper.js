@@ -1,4 +1,3 @@
-/* eslint-disable no-throw-literal */
 import jwt from 'jsonwebtoken';
 import Moment from 'moment';
 import { users } from '../data/data';

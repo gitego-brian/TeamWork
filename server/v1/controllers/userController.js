@@ -1,6 +1,3 @@
-/* eslint-disable no-throw-literal */
-/* eslint-disable linebreak-style */
-/* eslint-disable class-methods-use-this */
 import bcrypt from 'bcrypt';
 import Helper from '../helpers/helper';
 import schema from '../helpers/joiValidation';
