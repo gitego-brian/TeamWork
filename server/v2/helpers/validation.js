@@ -189,13 +189,15 @@ class Validate {
   validateParams(req, res, next) {
     const validArticleID = Number.isInteger(Number(req.params.articleID));
     const validCommentID = Number.isInteger(Number(req.params.commentID));
-    if (req.params.articleID && !validArticleID) {
+    if (req.params.articleID && (!validArticleID
+      || (parseInt(req.params.articleID, 10) > 1000000000))) {
       return res.status(400).send({
         status: 400,
         error: 'Invalid parameters',
       });
     }
-    if (req.params.commentID && !validCommentID) {
+    if (req.params.commentID && (!validCommentID
+      || (parseInt(req.params.commentID, 10) > 1000000000))) {
       return res.status(400).send({
         status: 400,
         error: 'Invalid parameters',
