@@ -13,5 +13,7 @@ router.delete('/:articleID', Helper.verifyToken, ArticleController.deleteArticle
 router.post('/:articleID/flags', Helper.verifyToken, Validation.validateArticleFlag, ArticleController.flagArticle);
 router.post('/:articleID/comments', Helper.verifyToken, Validation.validateComment, ArticleController.postComment);
 router.post('/:articleID/comments/:commentID/', Helper.verifyToken, Validation.validateCommentFlag, ArticleController.flagComment);
+router.delete('/:articleID/comments/:commentID/', Helper.verifyToken, ArticleController.deleteComment);
+
 
 export default router;

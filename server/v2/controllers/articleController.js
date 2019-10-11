@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable no-throw-literal */
 import pool from '../database/dbConnect';
 import Helper from '../helpers/helper';
@@ -25,13 +26,15 @@ class ArticleController {
 	}
 
 	async newArticle(req, res) {
-		const { title, article } = req.body;
+		let { title, article } = req.body;
 		const { firstName, lastName, id: authorId } = req.payload;
 		const authorName = `${firstName} ${lastName}`;
 		const query = `
         INSERT INTO articles (authorid, authorname, title, article)
         VALUES ($1, $2, $3, $4) RETURNING *;
-        `;
+		`;
+		title = title.replace(/\s+/g, ' ');
+		article = article.replace(/\s+/g, ' ');
 		const values = [authorId, authorName, title, article];
 		try {
 			const result = await pool.query(query, values);
@@ -289,7 +292,7 @@ class ArticleController {
 		const { articleID, commentID } = req.params;
 		const { id, isAdmin } = req.payload;
 		const article = await Helper.findOne(articleID, 'articles');
-		const comment = await Helper.findOne(articleID, 'comments');
+		const comment = await Helper.findOne(commentID, 'comments');
 		const flagQuery = `
 		SELECT * FROM articleflags WHERE articleid = $1;`;
 		const flagValues = [articleID];
