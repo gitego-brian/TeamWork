@@ -1,4 +1,3 @@
-/* eslint-disable no-throw-literal */
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import pool from '../database/dbConnect';

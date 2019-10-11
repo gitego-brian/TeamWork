@@ -5,7 +5,9 @@
     "mocha": true,
     "browser": true
   },
-  "extends": ["airbnb-base"],
+  "extends": [
+    "airbnb-base"
+  ],
   "parser": "babel-eslint",
   "globals": {
     "Atomics": "readonly",
@@ -14,13 +16,15 @@
   "parserOptions": {
     "ecmaVersion": 2018
   },
-
   "rules": {
     "class-methods-use-this": 0,
-    "no-tabs": 0,
-    "allowIndentationTabs": 0,
-    "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],
-    "indent": ["error", "tab"],
+    "no-throw-literal": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
     "comma-dangle": 0,
     "trailing-comma": 0,
     "quote-props": 0,
