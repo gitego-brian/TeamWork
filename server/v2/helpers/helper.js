@@ -76,10 +76,10 @@ class Helper {
 		}
 	}
 
-	async findComments(_req, res, id) {
+	async findComments(res, id) {
 		const query = `
 			SELECT * FROM comments
-			WHERE articleid = $1`;
+			WHERE articleid = $1;`;
 		const values = [id];
 		try {
 			const result = await pool.query(query, values);
@@ -95,7 +95,7 @@ class Helper {
 	async findOne(what, where) {
 		const query = `
         SELECT * FROM ${where}
-        WHERE id = $1`;
+        WHERE id = $1;`;
 		const values = [what];
 		try {
 			const result = await pool.query(query, values);
@@ -108,15 +108,26 @@ class Helper {
 		}
 	}
 
-	async findFlags(which, id, _res) {
+	async findCommentFlags(id) {
 		const query = `
-			SELECT * FROM ${which}Flags
-			WHERE ${which}id = $1`;
+			SELECT * FROM commentflags
+			WHERE commentid = $1;`;
 		const values = [id];
 		try {
 			const result = await pool.query(query, values);
-			return result.rows[0];
-		} catch (err) { return err; }
+			return result;
+		} catch (err) { return err.message; }
+	}
+
+	async findArticleFlags(id) {
+		const query = `
+			SELECT * FROM articleflags
+			WHERE articleid = $1;`;
+		const values = [id];
+		try {
+			const result = await pool.query(query, values);
+			return result.rows;
+		} catch (err) { return err.message; }
 	}
 }
 
