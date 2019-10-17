@@ -8,8 +8,8 @@ router.post('/signup', UserController.signUp);
 
 router.post('/signin', UserController.signIn);
 
-router.post('/users', UserController.makeAdmin);
+router.post('/users/makeadmin', UserController.makeAdmin);
 
-router.delete('/users', Helper.verifyToken, UserController.deleteUser);
+router.delete('/users/delete', Helper.verifyToken, UserController.deleteUser);
 
 export default router;
