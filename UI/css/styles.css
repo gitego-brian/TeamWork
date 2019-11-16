@@ -285,7 +285,6 @@ input::placeholder {
 
 input[type=radio] {
     display: inline;
-    width: fit-content;
 }
 input[value=female]{
     margin-left: 30px

@@ -41,31 +41,7 @@ describe('Version one', () => {
 				});
 		});
 
-		it('it should not sign up an employee  account when password is less than 8 characters', (done) => {
-			chai.request(app)
-				.post('/api/v1/auth/signup')
-				.send(mockData.signupShortPwd)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when password contains no numbers', (done) => {
-			chai.request(app)
-				.post('/api/v1/auth/signup')
-				.send(mockData.signupNoNumPwd)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when password contains no special characters ', (done) => {
+		it('it should not sign up an employee  account when password is weak ', (done) => {
 			chai.request(app)
 				.post('/api/v1/auth/signup')
 				.send(mockData.signupNoCharPwd)
@@ -77,19 +53,7 @@ describe('Version one', () => {
 				});
 		});
 
-		it('it should not sign up an employee  account when password contains no uppercase letter ', (done) => {
-			chai.request(app)
-				.post('/api/v1/auth/signup')
-				.send(mockData.signupNoUcasePwd)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the firstname is numbers', (done) => {
+		it('it should not sign up an employee  account when the info is invalid', (done) => {
 			chai.request(app)
 				.post('/api/v1/auth/signup')
 				.send(mockData.signupNumFname)
@@ -97,42 +61,6 @@ describe('Version one', () => {
 					res.should.have.status(400);
 					res.body.should.have.property('status').eql(400);
 					res.body.should.have.property('error').eql('firstName is not valid');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the lastName is numbers', (done) => {
-			chai.request(app)
-				.post('/api/v1/auth/signup')
-				.send(mockData.signupNumLname)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('lastName is not valid');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the firstName contains a whitespace', (done) => {
-			chai.request(app)
-				.post('/api/v1/auth/signup')
-				.send(mockData.signupSpaceFname)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('firstName is not valid');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the lastName contains a whitespace', (done) => {
-			chai.request(app)
-				.post('/api/v1/auth/signup')
-				.send(mockData.signupSpaceLname)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('lastName is not valid');
 					done();
 				});
 		});
@@ -178,7 +106,7 @@ describe('Version one', () => {
 	// Logging in
 
 	describe('Employee Login test', () => {
-		beforeEach('Create an employee', (done) => {
+		it('Create an employee', (done) => {
 			chai.request(app)
 				.post('/api/v1/auth/signup')
 				.send(mockData.signupComplete2)
@@ -214,20 +142,6 @@ describe('Version one', () => {
 					done();
 				});
 		});
-		it('it should not login an employee with no password', (done) => {
-			const data = {
-				email: mockData.loginComplete.email
-			};
-			chai.request(app)
-				.post('/api/v1/auth/signin')
-				.send(data)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password is required');
-					done();
-				});
-		});
 
 		it('it should not login an employee with wrong password', (done) => {
 			chai.request(app)
@@ -254,12 +168,9 @@ describe('Version one', () => {
 		});
 
 		it('should create an admin from a normal user', (done) => {
-			const data = {
-				email: mockData.loginComplete.email
-			};
 			chai.request(app)
-				.post('/api/v1/auth/users')
-				.send(data)
+				.post('/api/v1/auth/users/makeadmin')
+				.send({email: mockData.loginComplete.email})
 				.end((_err, res) => {
 					res.should.have.status(201);
 					res.body.should.have.property('status').eql(201);
@@ -271,12 +182,9 @@ describe('Version one', () => {
 		});
 
 		it('should not create an admin from a non existing user', (done) => {
-			const data = {
-				email: mockData.loginNoAccount.email
-			};
 			chai.request(app)
-				.post('/api/v1/auth/users')
-				.send(data)
+				.post('/api/v1/auth/users/makeadmin')
+				.send({email: mockData.loginNoAccount.email})
 				.end((_err, res) => {
 					res.should.have.status(404);
 					res.body.should.have.property('status').eql(404);
@@ -290,7 +198,7 @@ describe('Version one', () => {
 				email: mockData.signupComplete1.email
 			};
 			chai.request(app)
-				.delete('/api/v1/auth/users')
+				.delete('/api/v1/auth/users/delete')
 				.set('Authorization', `Bearer ${token}`)
 				.send(data)
 				.end((_err, res) => {
@@ -318,13 +226,10 @@ describe('Version one', () => {
 		});
 
 		it('admin cannot delete a non-existing user', (done) => {
-			const data = {
-				email: 'bran@gmail.com'
-			};
 			chai.request(app)
-				.delete('/api/v1/auth/users')
+				.delete('/api/v1/auth/users/delete')
 				.set('Authorization', `Bearer ${adminToken}`)
-				.send(data)
+				.send({email: 'bran@gmail.com'})
 				.end((_err, res) => {
 					res.should.have.status(404);
 					res.body.should.have.property('status').eql(404);
@@ -334,13 +239,10 @@ describe('Version one', () => {
 		});
 
 		it('admin can delete a user', (done) => {
-			const data = {
-				email: mockData.signupComplete1.email
-			};
 			chai.request(app)
-				.delete('/api/v1/auth/users')
+				.delete('/api/v1/auth/users/delete')
 				.set('Authorization', `Bearer ${adminToken}`)
-				.send(data)
+				.send({email: mockData.signupComplete1.email})
 				.end((_err, res) => {
 					res.should.have.status(200);
 					res.body.should.have.property('status').eql(200);
@@ -379,7 +281,7 @@ describe('Version Two', () => {
 				});
 		});
 
-		it('it should not sign up an employee  account when password is less than 8 characters', (done) => {
+		it('it should not sign up an employee  account when password is weak', (done) => {
 			chai.request(app)
 				.post('/api/v2/auth/signup')
 				.send(mockData.signupShortPwd)
@@ -391,43 +293,7 @@ describe('Version Two', () => {
 				});
 		});
 
-		it('it should not sign up an employee  account when password contains no numbers', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signup')
-				.send(mockData.signupNoNumPwd)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when password contains no special characters ', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signup')
-				.send(mockData.signupNoCharPwd)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when password contains no uppercase letter ', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signup')
-				.send(mockData.signupNoUcasePwd)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password must not be less than 8 characters and must contain lowercase letters, uppercase letters, numbers and special characters');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the firstname is numbers', (done) => {
+		it('it should not sign up an employee  account when the info is invalid', (done) => {
 			chai.request(app)
 				.post('/api/v2/auth/signup')
 				.send(mockData.signupNumFname)
@@ -435,42 +301,6 @@ describe('Version Two', () => {
 					res.should.have.status(400);
 					res.body.should.have.property('status').eql(400);
 					res.body.should.have.property('error').eql('firstName is not valid');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the lastName is numbers', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signup')
-				.send(mockData.signupNumLname)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('lastName is not valid');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the firstName contains a whitespace', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signup')
-				.send(mockData.signupSpaceFname)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('firstName is not valid');
-					done();
-				});
-		});
-
-		it('it should not sign up an employee  account when the lastName contains a whitespace', (done) => {
-			chai.request(app)
-				.post('/api/v2/auth/signup')
-				.send(mockData.signupSpaceLname)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('lastName is not valid');
 					done();
 				});
 		});
@@ -500,20 +330,6 @@ describe('Version Two', () => {
 					res.should.have.status(400);
 					res.body.should.have.property('status').eql(400);
 					res.body.should.have.property('error').eql('email is required');
-					done();
-				});
-		});
-		it('it should not login an employee with no password', (done) => {
-			const data = {
-				email: mockData.loginComplete.email
-			};
-			chai.request(app)
-				.post('/api/v2/auth/signin')
-				.send(data)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('password is required');
 					done();
 				});
 		});

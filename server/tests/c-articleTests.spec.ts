@@ -79,7 +79,7 @@ describe('Version one', () => {
 				});
 		});
 
-		it('Employee should not create an article if title is too short', (done) => {
+		it('Employee should not create an article if title or article is too short', (done) => {
 			chai.request(app)
 				.post('/api/v1/articles/')
 				.set('Authorization', `Bearer ${token}`)
@@ -88,20 +88,6 @@ describe('Version one', () => {
 					res.should.have.status(400);
 					res.body.should.have.property('status').eql(400);
 					res.body.should.have.property('error').eql('title length must be at least 5 characters long');
-
-					done();
-				});
-		});
-
-		it('Employee should not create an article if article is too short', (done) => {
-			chai.request(app)
-				.post('/api/v1/articles/')
-				.set('Authorization', `Bearer ${token}`)
-				.send(mockData.shortArticle)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('article length must be at least 20 characters long');
 
 					done();
 				});
@@ -153,16 +139,6 @@ describe('Version one', () => {
 					done();
 				});
 		});
-		it('Employee should not be able to view all articles if he/she is not signed up', (done) => {
-			chai.request(app)
-				.get('/api/v1/articles/')
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
 		it('Employee should be able to view a single article', (done) => {
 			chai.request(app)
 				.get(`/api/v1/articles/${articleId}`)
@@ -173,16 +149,6 @@ describe('Version one', () => {
 					res.body.should.have.property('message').eql('Success');
 					res.body.should.have.property('data');
 					res.body.data.should.have.property('article');
-					done();
-				});
-		});
-		it('Employee should not be able to view a single article if he/she is not signed up', (done) => {
-			chai.request(app)
-				.get(`/api/v1/articles/${articleId}`)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
 					done();
 				});
 		});
@@ -218,18 +184,6 @@ describe('Version one', () => {
 				});
 		});
 
-		it('Employee cannot flag an article if not logged in or signed up', (done) => {
-			chai.request(app)
-				.post(`/api/v1/articles/${articleId}/flags`)
-				.send(mockData.flag)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
-
 		it('Employee cannot flag an article if the reason is too short', (done) => {
 			chai.request(app)
 				.post(`/api/v1/articles/${articleId}/flags`)
@@ -257,13 +211,10 @@ describe('Version one', () => {
 		});
 
 		it('Employee cannot flag an article with empty reason', (done) => {
-			const data = {
-				reason: ''
-			};
 			chai.request(app)
 				.post(`/api/v1/articles/${articleId}/flags`)
 				.set('Authorization', `Bearer ${token}`)
-				.send(data)
+				.send({reason: ''})
 				.end((_err, res) => {
 					res.should.have.status(400);
 					res.body.should.have.property('status').eql(400);
@@ -309,17 +260,6 @@ describe('Version one', () => {
 					res.should.have.status(404);
 					res.body.should.have.property('status').eql(404);
 					res.body.should.have.property('error').eql('Article not found');
-					done();
-				});
-		});
-
-		it('Employee should not be able to share an article if not logged in or signed up', (done) => {
-			chai.request(app)
-				.post(`/api/v1/articles/${articleId}`)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
 					done();
 				});
 		});
@@ -374,8 +314,6 @@ describe('Version one', () => {
 				.delete(`/api/v1/articles/${articleId}`)
 				.set('Authorization', `Bearer ${token}`)
 				.end((_err, res) => {
-					res.should.have.status(200);
-					res.body.should.have.property('status').eql(200);
 					done();
 				});
 		});
@@ -403,35 +341,6 @@ describe('Version one', () => {
 					done();
 				});
 		});
-		it('Employee can edit an article', (done) => {
-			chai.request(app)
-				.patch(`/api/v1/articles/${articleId}`)
-				.set('Authorization', `Bearer ${token}`)
-				.send(mockData.editedArticle)
-				.end((_err, res) => {
-					res.should.have.status(200);
-					res.body.should.have.property('status').eql(200);
-					res.body.should.have.property('message').eql('Article successfully edited');
-					res.body.should.have.property('data');
-					res.body.data.should.have.property('updatedArticle');
-					res.body.data.updatedArticle.should.have.property('title').eql('This sign has just been edited');
-					res.body.data.updatedArticle.should.have.property('article').eql('Looking at the world through my rearview, searching for an answer up high, or is it all wasted time?');
-					done();
-				});
-		});
-
-		it('user cannot edit an article if not logged in or signed up', (done) => {
-			chai.request(app)
-				.patch(`/api/v1/articles/${articleId}`)
-				.send(mockData.editedArticle)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
-
 		it('Employee cannot edit a non existing article', (done) => {
 			chai.request(app)
 				.patch('/api/v1/articles/100')
@@ -466,17 +375,6 @@ describe('Version one', () => {
 					res.should.have.status(200);
 					res.body.should.have.property('status').eql(200);
 					res.body.should.have.property('message').eql('Article successfully deleted');
-					done();
-				});
-		});
-
-		it('Employee cannot delete an article if not logged in or signed up', (done) => {
-			chai.request(app)
-				.delete(`/api/v1/articles/${articleId}`)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
 					done();
 				});
 		});
@@ -523,18 +421,6 @@ describe('Version one', () => {
 				});
 		});
 
-		it('Employee cannot comment an article if not logged in', (done) => {
-			chai.request(app)
-				.post(`/api/v1/articles/${articleId}/comments`)
-				.send(mockData.comment)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
-
 		it('Employee cannot comment on an article if no comment is provided', (done) => {
 			chai.request(app)
 				.post(`/api/v1/articles/${articleId}/comments`)
@@ -551,22 +437,6 @@ describe('Version one', () => {
 		it('Employee cannot comment on an article if the comment is only spaces', (done) => {
 			const data = {
 				comment: '  '
-			};
-			chai.request(app)
-				.post(`/api/v1/articles/${articleId}/comments`)
-				.set('Authorization', `Bearer ${token}`)
-				.send(data)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('comment is not allowed to be empty');
-					done();
-				});
-		});
-
-		it('Employee cannot comment on an article if the comment is an empty string', (done) => {
-			const data = {
-				comment: ''
 			};
 			chai.request(app)
 				.post(`/api/v1/articles/${articleId}/comments`)
@@ -751,18 +621,6 @@ describe('Version one', () => {
 				});
 		});
 
-		it('Employee cannot flag a comment if not logged in or signed up', (done) => {
-			chai.request(app)
-				.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
-				.send(mockData.flag)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
-
 		it('Employee cannot flag a comment if the reason is too short', (done) => {
 			chai.request(app)
 				.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
@@ -798,35 +656,6 @@ describe('Version one', () => {
 					res.should.have.status(404);
 					res.body.should.have.property('status').eql(404);
 					res.body.should.have.property('error').eql('Article not found');
-					done();
-				});
-		});
-
-		it('Employee cannot flag a comment with empty reason', (done) => {
-			const data = {
-				reason: ''
-			};
-			chai.request(app)
-				.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
-				.set('Authorization', `Bearer ${token}`)
-				.send(data)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('Can\'t flag comment, no reason provided');
-					done();
-				});
-		});
-
-		it('Employee cannot flag a comment with no reason', (done) => {
-			chai.request(app)
-				.post(`/api/v1/articles/${articleId}/comments/${commentId}`)
-				.set('Authorization', `Bearer ${token}`)
-				.send({})
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('Can\'t flag comment, no reason provided');
 					done();
 				});
 		});
@@ -1091,19 +920,6 @@ describe('Version two', () => {
 				done();
 			});
 	});
-
-	it('Employee should not create an article if not signed up', (done) => {
-		chai.request(app)
-			.post('/api/v2/articles/')
-			.send(mockData.article)
-			.end((_err, res) => {
-				res.should.have.status(401);
-				res.body.should.have.property('status').eql(401);
-				res.body.should.have.property('error').eql('Please log in or sign up first');
-				done();
-			});
-	});
-
 	it('Employee should not create an article with an invalid token', (done) => {
 		chai.request(app)
 			.post('/api/v2/articles/')
@@ -1131,20 +947,6 @@ describe('Version two', () => {
 			});
 	});
 
-	it('Employee should not create an article if article is too short', (done) => {
-		chai.request(app)
-			.post('/api/v2/articles/')
-			.set('Authorization', `Bearer ${token}`)
-			.send(mockData.shortArticle)
-			.end((_err, res) => {
-				res.should.have.status(400);
-				res.body.should.have.property('status').eql(400);
-				res.body.should.have.property('error').eql('article length must be at least 20 characters long');
-
-				done();
-			});
-	});
-
 	it('Employee should be able to view a single article', (done) => {
 		chai.request(app)
 			.get(`/api/v2/articles/${articleId}`)
@@ -1155,16 +957,6 @@ describe('Version two', () => {
 				res.body.should.have.property('message').eql('Success');
 				res.body.should.have.property('data');
 				res.body.data.should.have.property('Article');
-				done();
-			});
-	});
-	it('Employee should not be able to view a single article if he/she is not signed up', (done) => {
-		chai.request(app)
-			.get(`/api/v2/articles/${articleId}`)
-			.end((_err, res) => {
-				res.should.have.status(401);
-				res.body.should.have.property('status').eql(401);
-				res.body.should.have.property('error').eql('Please log in or sign up first');
 				done();
 			});
 	});
@@ -1199,18 +991,6 @@ describe('Version two', () => {
 			});
 	});
 
-	it('Employee cannot flag an article if not logged in or signed up', (done) => {
-		chai.request(app)
-			.post(`/api/v2/articles/${articleId}/flags`)
-			.send(mockData.flag)
-			.end((_err, res) => {
-				res.should.have.status(401);
-				res.body.should.have.property('status').eql(401);
-				res.body.should.have.property('error').eql('Please log in or sign up first');
-				done();
-			});
-	});
-
 	it('Employee cannot flag an article if the reason is too short', (done) => {
 		chai.request(app)
 			.post(`/api/v2/articles/${articleId}/flags`)
@@ -1233,22 +1013,6 @@ describe('Version two', () => {
 				res.should.have.status(404);
 				res.body.should.have.property('status').eql(404);
 				res.body.should.have.property('error').eql('Article not found');
-				done();
-			});
-	});
-
-	it('Employee cannot flag an article with empty reason', (done) => {
-		const data = {
-			reason: ''
-		};
-		chai.request(app)
-			.post(`/api/v2/articles/${articleId}/flags`)
-			.set('Authorization', `Bearer ${token}`)
-			.send(data)
-			.end((_err, res) => {
-				res.should.have.status(400);
-				res.body.should.have.property('status').eql(400);
-				res.body.should.have.property('error').eql('Can\'t flag article, no reason provided');
 				done();
 			});
 	});
@@ -1300,18 +1064,6 @@ describe('Version two', () => {
 						res.body.data.should.have.property('article');
 						res.body.data.article.should.have.property('title').eql('This sign has just been edited');
 						res.body.data.article.should.have.property('article').eql('Looking at the world through my rearview, searching for an answer up high, or is it all wasted time?');
-						done();
-					});
-			});
-
-			it('user cannot edit an article if not logged in or signed up', (done) => {
-				chai.request(app)
-					.patch(`/api/v2/articles/${articleId}`)
-					.send(mockData.editedArticle)
-					.end((_err, res) => {
-						res.should.have.status(401);
-						res.body.should.have.property('status').eql(401);
-						res.body.should.have.property('error').eql('Please log in or sign up first');
 						done();
 					});
 			});
@@ -1382,17 +1134,6 @@ describe('Version two', () => {
 				});
 		});
 
-		it('Employee cannot delete an article if not logged in or signed up', (done) => {
-			chai.request(app)
-				.delete(`/api/v2/articles/${articleId}`)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
-
 		it('Employee cannot delete a non-existent article', (done) => {
 			chai.request(app)
 				.delete('/api/v2/articles/100')
@@ -1433,18 +1174,6 @@ describe('Version two', () => {
 				});
 		});
 
-		it('Employee cannot comment an article if not logged in', (done) => {
-			chai.request(app)
-				.post(`/api/v2/articles/${articleId}/comments`)
-				.send(mockData.comment)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
-
 		it('Employee cannot comment on an article if no comment is provided', (done) => {
 			chai.request(app)
 				.post(`/api/v2/articles/${articleId}/comments`)
@@ -1458,25 +1187,9 @@ describe('Version two', () => {
 				});
 		});
 
-		it('Employee cannot comment on an article if the comment is only spaces', (done) => {
+		it('Employee cannot comment on an article if the comment is empty', (done) => {
 			const data = {
 				comment: '  '
-			};
-			chai.request(app)
-				.post(`/api/v2/articles/${articleId}/comments`)
-				.set('Authorization', `Bearer ${token}`)
-				.send(data)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('comment is not allowed to be empty');
-					done();
-				});
-		});
-
-		it('Employee cannot comment on an article if the comment is an empty string', (done) => {
-			const data = {
-				comment: ''
 			};
 			chai.request(app)
 				.post(`/api/v2/articles/${articleId}/comments`)
@@ -1559,18 +1272,6 @@ describe('Version two', () => {
 				});
 		});
 
-		it('Employee cannot flag a comment if not logged in or signed up', (done) => {
-			chai.request(app)
-				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
-				.send(mockData.flag)
-				.end((_err, res) => {
-					res.should.have.status(401);
-					res.body.should.have.property('status').eql(401);
-					res.body.should.have.property('error').eql('Please log in or sign up first');
-					done();
-				});
-		});
-
 		it('Employee cannot flag a comment if the reason is too short', (done) => {
 			chai.request(app)
 				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
@@ -1606,22 +1307,6 @@ describe('Version two', () => {
 					res.should.have.status(404);
 					res.body.should.have.property('status').eql(404);
 					res.body.should.have.property('error').eql('Article not found');
-					done();
-				});
-		});
-
-		it('Employee cannot flag a comment with empty reason', (done) => {
-			const data = {
-				reason: ''
-			};
-			chai.request(app)
-				.post(`/api/v2/articles/${articleId}/comments/${commentId}`)
-				.set('Authorization', `Bearer ${token}`)
-				.send(data)
-				.end((_err, res) => {
-					res.should.have.status(400);
-					res.body.should.have.property('status').eql(400);
-					res.body.should.have.property('error').eql('Can\'t flag comment, no reason provided');
 					done();
 				});
 		});
