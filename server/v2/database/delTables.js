@@ -5,12 +5,12 @@ import pool from './dbConnect';
 dotenv.config();
 
 const delTables = async () => {
-	try {
-		await pool.query(deleteTables);
-		process.exit(0);
-	} catch (e) {
-		console.log(e);
-	}
+  try {
+    await pool.query(deleteTables);
+    process.exit(0);
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 delTables();

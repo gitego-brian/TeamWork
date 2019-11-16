@@ -35,11 +35,10 @@ class UserController {
         else throw error.details[0].message.replace(/[/"]/g, '');
       }
     } catch (err) {
-      res.status(400).send({
+      return res.status(400).send({
         status: 400,
         error: err
       });
-      return;
     }
     if (users.find((el) => el.email === req.body.email)) {
       res.status(409).send({

@@ -62,7 +62,7 @@ The UI template is hosted on gh-pages and can be found at https://gitego-brian.g
 
 # Installation:
 
-**Follow the step below:**
+**Follow the steps below:**
 
 If you do not have node.js and git in your computer, install them first:
 
